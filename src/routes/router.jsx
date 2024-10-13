@@ -52,12 +52,12 @@ const router = createBrowserRouter([
                     Component: (await import('@/pages/dashboard/Dashboard')).default,
                 }),
             },
-            // {
-            //     path: 'tasks',
-            //     lazy: async () => ({
-            //         Component: (await import('@/pages/tasks')).default,
-            //     }),
-            // },
+            {
+                path: 'prize-shelf',
+                lazy: async () => ({
+                    Component: (await import('@/pages/prize-shelf/PrizeShelf')).default,
+                }),
+            },
             // {
             //     path: 'chats',
             //     lazy: async () => ({
