@@ -58,12 +58,12 @@ const router = createBrowserRouter([
                     Component: (await import('@/pages/prize-shelf/PrizeShelf')).default,
                 }),
             },
-            // {
-            //     path: 'chats',
-            //     lazy: async () => ({
-            //         Component: (await import('@/pages/chats')).default,
-            //     }),
-            // },
+            {
+                path: 'prize-shelf/new',
+                lazy: async () => ({
+                    Component: (await import('@/pages/prize-shelf/AddPrizeShelf')).default,
+                }),
+            },
             // {
             //     path: 'apps',
             //     lazy: async () => ({

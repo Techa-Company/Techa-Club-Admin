@@ -23,7 +23,7 @@ export const sidelinks = [
       {
         title: "ایجاد جایزه",
         label: "",
-        href: "/sign-in",
+        href: "/prize-shelf/new",
         icon: <IconHexagonNumber1 size={18} />,
       },
       {
