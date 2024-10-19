@@ -64,6 +64,12 @@ const router = createBrowserRouter([
                     Component: (await import('@/pages/prize-shelf/AddPrizeShelf')).default,
                 }),
             },
+            {
+                path: 'prize-shelf/edit/:id',
+                lazy: async () => ({
+                    Component: (await import('@/pages/prize-shelf/EditPrizeShelf')).default,
+                }),
+            },
             // {
             //     path: 'apps',
             //     lazy: async () => ({

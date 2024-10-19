@@ -29,6 +29,7 @@ import {
 } from "../ui/table"
 import { Button } from "../button"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select"
+import { Link } from "react-router-dom"
 
 const data = [
     {
@@ -126,7 +127,9 @@ const columns = [
                             کپی کردن عنوان
                         </DropdownMenuItem>
                         <DropdownMenuSeparator />
-                        <DropdownMenuItem>ویرایش</DropdownMenuItem>
+                        <DropdownMenuItem>
+                            <Link to={`edit/${payment.id}`}>ویرایش</Link>
+                        </DropdownMenuItem>
                         <DropdownMenuItem>حذف</DropdownMenuItem>
                     </DropdownMenuContent>
                 </DropdownMenu>

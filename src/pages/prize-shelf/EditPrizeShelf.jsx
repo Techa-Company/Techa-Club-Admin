@@ -61,7 +61,7 @@ export default function AddPrizeShelf() {
             {/* ===== Main ===== */}
             <Layout.Body>
                 <div className='mb-2'>
-                    <h1 className='text-2xl font-bold tracking-tight'>افزودن جایزه جدید</h1>
+                    <h1 className='text-2xl font-bold tracking-tight'>ویرایش جایزه</h1>
                 </div>
                 <form onSubmit={handleSubmit} className="space-y-5 mt-10">
                     <div className='grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5'>
@@ -164,7 +164,7 @@ export default function AddPrizeShelf() {
 
 
                     <div className='flex gap-2'>
-                        <Button className='px-5' type="submit">ثبت</Button>
+                        <Button className='px-5' type="submit">ویرایش</Button>
                         <Button className='px-5' variant='outline' type="button" onClick={() => navigate("/prize-shelf")}>لغو</Button>
                     </div>
                 </form>

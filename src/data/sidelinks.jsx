@@ -27,16 +27,10 @@ export const sidelinks = [
         icon: <IconHexagonNumber1 size={18} />,
       },
       {
-        title: "برسی کد جایزه",
-        label: "",
-        href: "/sign-in-2",
-        icon: <IconHexagonNumber2 size={18} />,
-      },
-      {
         title: "لیست جایزه ها",
         label: "",
         href: "/prize-shelf",
-        icon: <IconHexagonNumber3 size={18} />,
+        icon: <IconHexagonNumber2 size={18} />,
       },
     ],
   },

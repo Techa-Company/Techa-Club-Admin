@@ -6,6 +6,8 @@ import { Search } from '@/components/Search'
 import { Navbar } from '@/components/Navbar'
 import { Button } from '@/components/button'
 import { DataTable } from '@/components/common/DataTable'
+import { useNavigate } from 'react-router-dom'
+import { CheckPrize } from './components/CheckPrize'
 // import ThemeSwitch from '@/components/theme-switch'
 // import { RecentSales } from './components/recent-sales'
 // import { Overview } from './components/overview'
@@ -14,6 +16,7 @@ import { DataTable } from '@/components/common/DataTable'
 
 
 export default function PrizeShelf() {
+    const navigate = useNavigate()
     return (
         <Layout>
             {/* ===== Top Heading ===== */}
@@ -30,8 +33,10 @@ export default function PrizeShelf() {
             <Layout.Body>
                 <div className='mb-2 flex items-center justify-between space-y-2'>
                     <h1 className='text-2xl font-bold tracking-tight'>لیست جایزه ها</h1>
-                    <div className='flex items-center space-x-2'>
-                        <Button>ایجاد جایزه</Button>
+                    <div className='flex items-center gap-3'>
+                        {/* <Button >برسی کد جایزه</Button> */}
+                        <CheckPrize />
+                        <Button onClick={() => navigate("new")}>ایجاد جایزه</Button>
                     </div>
                 </div>
 
