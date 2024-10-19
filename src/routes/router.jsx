@@ -70,6 +70,30 @@ const router = createBrowserRouter([
                     Component: (await import('@/pages/prize-shelf/EditPrizeShelf')).default,
                 }),
             },
+            {
+                path: 'sms-management',
+                lazy: async () => ({
+                    Component: (await import('@/pages/sms-management/SMSReport')).default,
+                }),
+            },
+            {
+                path: 'expenses',
+                lazy: async () => ({
+                    Component: (await import('@/pages/sms-management/Expenses')).default,
+                }),
+            },
+            {
+                path: 'buy-sms',
+                lazy: async () => ({
+                    Component: (await import('@/pages/sms-management/BuySMS')).default,
+                }),
+            },
+            {
+                path: 'sms-template',
+                lazy: async () => ({
+                    Component: (await import('@/pages/sms-management/SMSTemplate')).default,
+                }),
+            },
             // {
             //     path: 'apps',
             //     lazy: async () => ({

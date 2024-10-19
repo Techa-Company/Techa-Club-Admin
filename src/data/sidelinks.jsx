@@ -3,7 +3,6 @@ import {
   IconHexagonNumber2,
   IconHexagonNumber3,
   IconHexagonNumber4,
-  IconHexagonNumber5,
 } from "@tabler/icons-react";
 import { Archive, ChartColumnBig, Crown, FerrisWheel, Gift, Image, Infinity, LayoutDashboard, Mail, RectangleEllipsis, ShoppingBasket, Slack, TicketPercent, Trophy, Users } from "lucide-react";
 
@@ -41,34 +40,28 @@ export const sidelinks = [
     icon: <Mail size={18} />,
     sub: [
       {
-        title: "ارسال پیامک",
-        label: "",
-        href: "/sign-in",
-        icon: <IconHexagonNumber1 size={18} />,
-      },
-      {
         title: "گزارش پیامک ها",
         label: "",
-        href: "/sign-in-2",
-        icon: <IconHexagonNumber2 size={18} />,
+        href: "/sms-management",
+        icon: <IconHexagonNumber1 size={18} />,
       },
       {
         title: "خرید بسته",
         label: "",
-        href: "/sign-up",
-        icon: <IconHexagonNumber3 size={18} />,
+        href: "/buy-sms",
+        icon: <IconHexagonNumber2 size={18} />,
       },
       {
         title: "لیست هزینه ها",
         label: "",
-        href: "/forgot-password",
-        icon: <IconHexagonNumber4 size={18} />,
+        href: "/expenses",
+        icon: <IconHexagonNumber3 size={18} />,
       },
       {
         title: "قالب پیامکی",
         label: "",
-        href: "/otp",
-        icon: <IconHexagonNumber5 size={18} />,
+        href: "/sms-template",
+        icon: <IconHexagonNumber4 size={18} />,
       },
     ],
   },

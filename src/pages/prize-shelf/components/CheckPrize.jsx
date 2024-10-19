@@ -1,12 +1,9 @@
-import { Copy } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import {
     Dialog,
-    DialogClose,
     DialogContent,
     DialogDescription,
-    DialogFooter,
     DialogHeader,
     DialogTitle,
     DialogTrigger,
@@ -32,8 +29,7 @@ export function CheckPrize() {
                         <Label htmlFor="link" className="sr-only">
                             Link
                         </Label>
-                        <Input
-                        />
+                        <Input />
                     </div>
                     <Button type="button">
                         برسی

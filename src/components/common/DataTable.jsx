@@ -7,18 +7,24 @@ import {
     getSortedRowModel,
     useReactTable,
 } from "@tanstack/react-table"
-import { ArrowUpDown, ChevronDown, ChevronLeftIcon, ChevronRightIcon, ChevronsLeftIcon, ChevronsRightIcon, MoreHorizontal } from "lucide-react"
+
+import {
+    ChevronDown,
+    ChevronLeftIcon,
+    ChevronRightIcon,
+    ChevronsLeftIcon,
+    ChevronsRightIcon
+} from "lucide-react"
 
 import {
     DropdownMenu,
     DropdownMenuCheckboxItem,
     DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuLabel,
-    DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from "../ui/dropdown-menu"
+
 import { Input } from "../ui/input"
+
 import {
     Table,
     TableBody,
@@ -27,118 +33,20 @@ import {
     TableHeader,
     TableRow,
 } from "../ui/table"
+
 import { Button } from "../button"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select"
-import { Link } from "react-router-dom"
 
-const data = [
-    {
-        id: 1,
-        usage: "316",
-        title: "تخفیف اول",
-    },
-    {
-        id: 2,
-        usage: "242",
-        title: "تخفیف دوم",
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue
+} from "../ui/select"
 
-    },
-    {
-        id: 3,
-        usage: "837",
-        title: "تخفیف سوم",
-    },
-    {
-        id: 4,
-        usage: "874",
-        title: "تخفیف چهارم",
-    },
-    {
-        id: 5,
-        usage: "721",
-        title: "تخفیف پنجم",
-    },
-    {
-        id: 6,
-        usage: "316",
-        title: "تخفیف ششم",
-    },
-    {
-        id: 7,
-        usage: "242",
-        title: "تخفیف هفتم",
-    },
-]
+import PropTypes from "prop-types"
 
-
-const columns = [
-
-    {
-        accessorKey: "id",
-        header: "ردیف",
-        cell: ({ row }) => (
-            <div >{row.getValue("id")}</div>
-        ),
-    },
-    {
-        accessorKey: "title",
-        header: ({ column }) => {
-            return (
-                <Button
-                    variant="ghost"
-                    onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-                >
-                    عنوان
-                    <ArrowUpDown className="mr-2 h-4 w-4" />
-                </Button>
-            )
-        },
-        cell: ({ row }) => <div className="lowercase">{row.getValue("title")}</div>,
-    },
-    {
-        accessorKey: "usage",
-        header: () => <div >تعداد استفاده</div>,
-        cell: ({ row }) => {
-
-
-            return <div className="text-right font-medium">{row.getValue("usage")} بار</div>
-        },
-    },
-    {
-        id: "actions",
-        enableHiding: false,
-        header: () => <div >عملیات</div>,
-
-        cell: ({ row }) => {
-            const payment = row.original
-            return (
-                <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" className="h-8 w-8 p-0">
-                            <span className="sr-only">بازکردن</span>
-                            <MoreHorizontal className="h-4 w-4" />
-                        </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="start">
-                        <DropdownMenuLabel>عملیات ها</DropdownMenuLabel>
-                        <DropdownMenuItem
-                            onClick={() => navigator.clipboard.writeText(payment.title)}
-                        >
-                            کپی کردن عنوان
-                        </DropdownMenuItem>
-                        <DropdownMenuSeparator />
-                        <DropdownMenuItem>
-                            <Link to={`edit/${payment.id}`}>ویرایش</Link>
-                        </DropdownMenuItem>
-                        <DropdownMenuItem>حذف</DropdownMenuItem>
-                    </DropdownMenuContent>
-                </DropdownMenu>
-            )
-        },
-    },
-]
-
-export function DataTable() {
+export function DataTable({ data, columns, filters }) {
     const [sorting, setSorting] = React.useState([])
     const [columnFilters, setColumnFilters] = React.useState([])
     const [columnVisibility, setColumnVisibility] =
@@ -172,15 +80,25 @@ export function DataTable() {
 
     return (
         <div className="w-full">
-            <div className="flex items-center py-4 gap-5">
-                <Input
-                    placeholder="فیلتر بر اساس عنوان"
-                    value={(table.getColumn("title")?.getFilterValue()) ?? ""}
-                    onChange={(event) =>
-                        table.getColumn("title")?.setFilterValue(event.target.value)
+            <div className="flex flex-col md:flex-row py-4 gap-5">
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
+                    {
+                        filters.map((item, index) => {
+                            return (
+                                <Input
+                                    key={index}
+                                    placeholder={`فیلتر بر اساس ${item.placeholder}`}
+                                    value={(table.getColumn(item.value)?.getFilterValue()) ?? ""}
+                                    onChange={(event) =>
+                                        table.getColumn(item.value)?.setFilterValue(event.target.value)
+                                    }
+                                    className="w-full"
+                                />
+                            )
+                        })
                     }
-                    className="max-w-sm"
-                />
+
+                </div>
                 <DropdownMenu>
                     <DropdownMenuTrigger asChild>
                         <Button variant="outline" className="mr-auto">
@@ -326,4 +244,10 @@ export function DataTable() {
             </div>
         </div>
     )
+}
+
+DataTable.propTypes = {
+    data: PropTypes.array,
+    columns: PropTypes.array,
+    filters: PropTypes.array
 }
