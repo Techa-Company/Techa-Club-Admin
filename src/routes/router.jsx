@@ -94,6 +94,12 @@ const router = createBrowserRouter([
                     Component: (await import('@/pages/sms-management/SMSTemplate')).default,
                 }),
             },
+            {
+                path: 'discount-code',
+                lazy: async () => ({
+                    Component: (await import('@/pages/discount-code/DiscountCode')).default,
+                }),
+            },
             // {
             //     path: 'apps',
             //     lazy: async () => ({

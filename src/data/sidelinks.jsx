@@ -68,28 +68,8 @@ export const sidelinks = [
   {
     title: "کد های تخفیف",
     label: "",
-    href: "",
+    href: "/discount-code",
     icon: <TicketPercent size={18} />,
-    sub: [
-      {
-        title: "استفاده شده",
-        label: "",
-        href: "/sign-in",
-        icon: <IconHexagonNumber1 size={18} />,
-      },
-      {
-        title: "فعال",
-        label: "",
-        href: "/sign-in-2",
-        icon: <IconHexagonNumber2 size={18} />,
-      },
-      {
-        title: "منقضی شده",
-        label: "",
-        href: "/sign-up",
-        icon: <IconHexagonNumber3 size={18} />,
-      }
-    ],
   },
   {
     title: "سناریوی فراموشی",
