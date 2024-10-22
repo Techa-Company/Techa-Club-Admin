@@ -4,7 +4,7 @@ import {
   IconHexagonNumber3,
   IconHexagonNumber4,
 } from "@tabler/icons-react";
-import { Archive, ChartColumnBig, Crown, FerrisWheel, Gift, Image, Infinity, LayoutDashboard, Mail, RectangleEllipsis, ShoppingBasket, Slack, TicketPercent, Trophy, Users } from "lucide-react";
+import { Archive, ChartColumnBig, Crown, FerrisWheel, Gift, Image, Infinity, LayoutDashboard, Mail, RectangleEllipsis, Settings, Settings2, ShoppingBasket, Slack, TicketPercent, Trophy, Users } from "lucide-react";
 
 export const sidelinks = [
   {
@@ -158,21 +158,30 @@ export const sidelinks = [
     ],
   },
   {
-    title: "توضیحات داشبورد مشتریان",
+    title: "تنظیمات",
     label: "",
-    href: "/users",
-    icon: <RectangleEllipsis size={18} />,
+    href: "",
+    icon: <Settings size={18} />,
+    sub: [
+      {
+        title: "توضیحات داشبورد مشتریان",
+        label: "",
+        href: "/users",
+        icon: <IconHexagonNumber1 size={18} />,
+      },
+      {
+        title: "بنر داشبورد مشتریان",
+        label: "",
+        href: "/analysis",
+        icon: <IconHexagonNumber2 size={18} />,
+      },
+      {
+        title: "لوگوی کسب و کار",
+        label: "",
+        href: "/analysis",
+        icon: <IconHexagonNumber3 size={18} />,
+      },
+    ],
   },
-  {
-    title: "بنر داشبورد مشتریان",
-    label: "",
-    href: "/analysis",
-    icon: <Image size={18} />,
-  },
-  {
-    title: "لوگوی کسب و کار",
-    label: "",
-    href: "/analysis",
-    icon: <Slack size={18} />,
-  },
+
 ];

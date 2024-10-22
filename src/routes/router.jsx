@@ -130,12 +130,12 @@ const router = createBrowserRouter([
                     Component: (await import('@/pages/customer-management/CustomerShoppingList')).default,
                 }),
             },
-            // {
-            //     path: 'apps',
-            //     lazy: async () => ({
-            //         Component: (await import('@/pages/apps')).default,
-            //     }),
-            // },
+            {
+                path: 'lucky-wheel',
+                lazy: async () => ({
+                    Component: (await import('@/pages/lucky-wheel/LuckyWheel')).default,
+                }),
+            },
             // {
             //     path: 'users',
             //     lazy: async () => ({
