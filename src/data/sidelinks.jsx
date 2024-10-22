@@ -78,53 +78,63 @@ export const sidelinks = [
     icon: <Infinity size={18} />,
     sub: [
       {
-        title: "کد های تخفیف",
+        title: "لیست سناریو ها",
         label: "",
-        href: "/sign-in",
+        href: "/forget-scenario",
         icon: <IconHexagonNumber1 size={18} />,
       },
       {
         title: "تنظیم سناریوی فراموشی",
         label: "",
-        href: "/sign-in-2",
+        href: "/forget-scenario/edit",
         icon: <IconHexagonNumber2 size={18} />,
       },
     ],
   },
   {
-    title: "مدیریت اعضا",
-    label: "3",
-    href: "/tasks",
+    title: "مدیریت مشتریان",
+    label: "",
+    href: "",
     icon: <Users size={18} />,
+    sub: [
+      {
+        title: "سطح بندی مشتریان",
+        label: "",
+        href: "/customer-level",
+        icon: <IconHexagonNumber1 size={18} />,
+      },
+      {
+        title: "لیست مشتریان",
+        label: "",
+        href: "/customers",
+        icon: <IconHexagonNumber2 size={18} />,
+      },
+      {
+        title: "لیست خرید مشتریان",
+        label: "",
+        href: "/customer-shopping-list",
+        icon: <IconHexagonNumber3 size={18} />,
+      },
+    ],
   },
   {
     title: "کمپین های فروش",
-    label: "9",
+    label: "",
     href: "/chats",
     icon: <Crown size={18} />,
   },
-  {
-    title: "خرید مشتریان",
-    label: "",
-    href: "/apps",
-    icon: <ShoppingBasket size={18} />,
-  },
+
   {
     title: "مدیریت امتیازات",
     label: "",
     href: "/apps",
     icon: <Trophy size={18} />,
   },
-  {
-    title: "سطح بندی مشتریان",
-    label: "",
-    href: "/apps",
-    icon: <ChartColumnBig size={18} />,
-  },
+
   {
     title: "گردونه شانس",
     label: "",
-    href: "/apps",
+    href: "/lucky-wheel",
     icon: <FerrisWheel size={18} />,
   },
   {

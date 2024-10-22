@@ -100,6 +100,36 @@ const router = createBrowserRouter([
                     Component: (await import('@/pages/discount-code/DiscountCode')).default,
                 }),
             },
+            {
+                path: 'forget-scenario',
+                lazy: async () => ({
+                    Component: (await import('@/pages/forget-scenario/ForgetScenario')).default,
+                }),
+            },
+            {
+                path: 'forget-scenario/edit',
+                lazy: async () => ({
+                    Component: (await import('@/pages/forget-scenario/EditForgetScenario')).default,
+                }),
+            },
+            {
+                path: 'customer-level',
+                lazy: async () => ({
+                    Component: (await import('@/pages/customer-management/CustomerLevels')).default,
+                }),
+            },
+            {
+                path: 'customers',
+                lazy: async () => ({
+                    Component: (await import('@/pages/customer-management/Customers')).default,
+                }),
+            },
+            {
+                path: 'customer-shopping-list',
+                lazy: async () => ({
+                    Component: (await import('@/pages/customer-management/CustomerShoppingList')).default,
+                }),
+            },
             // {
             //     path: 'apps',
             //     lazy: async () => ({
