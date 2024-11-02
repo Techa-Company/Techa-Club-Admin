@@ -148,12 +148,12 @@ const router = createBrowserRouter([
                     Component: (await import('@/pages/sales-campaign/AddSalesCampaign')).default,
                 }),
             },
-            // {
-            //     path: 'analysis',
-            //     lazy: async () => ({
-            //         Component: (await import('@/components/coming-soon')).default,
-            //     }),
-            // },
+            {
+                path: 'poll',
+                lazy: async () => ({
+                    Component: (await import('@/pages/poll/Polls')).default,
+                }),
+            },
             // {
             //     path: 'extra-components',
             //     lazy: async () => ({

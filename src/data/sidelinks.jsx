@@ -139,22 +139,8 @@ export const sidelinks = [
   {
     title: "نظرسنجی",
     label: "",
-    href: "",
+    href: "/poll",
     icon: <Archive size={18} />,
-    sub: [
-      {
-        title: "افزودن نظر سنجی",
-        label: "",
-        href: "/sign-in",
-        icon: <IconHexagonNumber1 size={18} />,
-      },
-      {
-        title: "لیست نظر سنجی",
-        label: "",
-        href: "/sign-in-2",
-        icon: <IconHexagonNumber2 size={18} />,
-      },
-    ],
   },
   {
     title: "تنظیمات",
