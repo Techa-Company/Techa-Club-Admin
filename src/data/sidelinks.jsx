@@ -149,22 +149,16 @@ export const sidelinks = [
     icon: <Settings size={18} />,
     sub: [
       {
-        title: "توضیحات داشبورد مشتریان",
+        title: "بنر پنل مشتریان",
         label: "",
-        href: "/users",
+        href: "setting/banner",
         icon: <IconHexagonNumber1 size={18} />,
       },
       {
-        title: "بنر داشبورد مشتریان",
+        title: "تنظیمات پنل مشتریان",
         label: "",
-        href: "setting/banner",
+        href: "/setting/setting",
         icon: <IconHexagonNumber2 size={18} />,
-      },
-      {
-        title: "لوگوی کسب و کار",
-        label: "",
-        href: "/analysis",
-        icon: <IconHexagonNumber3 size={18} />,
       },
     ],
   },
