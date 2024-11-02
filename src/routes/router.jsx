@@ -136,12 +136,18 @@ const router = createBrowserRouter([
                     Component: (await import('@/pages/lucky-wheel/LuckyWheel')).default,
                 }),
             },
-            // {
-            //     path: 'users',
-            //     lazy: async () => ({
-            //         Component: (await import('@/components/coming-soon')).default,
-            //     }),
-            // },
+            {
+                path: 'sales-campaign',
+                lazy: async () => ({
+                    Component: (await import('@/pages/sales-campaign/SalesCampaign')).default,
+                }),
+            },
+            {
+                path: 'sales-campaign/new',
+                lazy: async () => ({
+                    Component: (await import('@/pages/sales-campaign/AddSalesCampaign')).default,
+                }),
+            },
             // {
             //     path: 'analysis',
             //     lazy: async () => ({

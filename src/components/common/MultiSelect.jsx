@@ -298,7 +298,7 @@ export const MultiSelect = React.forwardRef(
                         </CommandList>
                     </Command>
                 </PopoverContent>
-                {animation > 0 && selectedValues.length > 0 && (
+                {/* {animation > 0 && selectedValues.length > 0 && (
                     <WandSparkles
                         className={cn(
                             "cursor-pointer my-2 text-foreground bg-background w-3 h-3",
@@ -306,7 +306,7 @@ export const MultiSelect = React.forwardRef(
                         )}
                         onClick={() => setIsAnimating(!isAnimating)}
                     />
-                )}
+                )} */}
             </Popover>
         );
     }

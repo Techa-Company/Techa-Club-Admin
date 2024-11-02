@@ -4,7 +4,7 @@ import {
   IconHexagonNumber3,
   IconHexagonNumber4,
 } from "@tabler/icons-react";
-import { Archive, ChartColumnBig, Crown, FerrisWheel, Gift, Image, Infinity, LayoutDashboard, Mail, RectangleEllipsis, Settings, Settings2, ShoppingBasket, Slack, TicketPercent, Trophy, Users } from "lucide-react";
+import { Archive, Crown, FerrisWheel, Gift, Infinity, LayoutDashboard, Mail, Settings, TicketPercent, Trophy, Users } from "lucide-react";
 
 export const sidelinks = [
   {
@@ -12,6 +12,13 @@ export const sidelinks = [
     label: "",
     href: "/",
     icon: <LayoutDashboard size={18} />,
+  },
+
+  {
+    title: "مدیریت امتیازات",
+    label: "",
+    href: "/apps",
+    icon: <Trophy size={18} />,
   },
   {
     title: "قفسه جوایز",
@@ -120,17 +127,9 @@ export const sidelinks = [
   {
     title: "کمپین های فروش",
     label: "",
-    href: "/chats",
+    href: "/sales-campaign",
     icon: <Crown size={18} />,
   },
-
-  {
-    title: "مدیریت امتیازات",
-    label: "",
-    href: "/apps",
-    icon: <Trophy size={18} />,
-  },
-
   {
     title: "گردونه شانس",
     label: "",
@@ -183,5 +182,4 @@ export const sidelinks = [
       },
     ],
   },
-
 ];

@@ -3,81 +3,105 @@ import { UserNavbar } from '@/components/UserNavbar'
 import { Search } from '@/components/Search'
 import { Navbar } from '@/components/Navbar'
 import { Button } from '@/components/button'
-import { Input } from '@/components/ui/input'
-import { EditableDataTable } from '@/components/common/EditableDataTable'
+import { DataTable } from '@/components/common/DataTable'
+import { ArrowUpDown } from 'lucide-react'
+import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { AddCustomerLevel } from './components/AddCustomerLevel'
 
 
 const data = [
     {
-        bronze: "1000000",
-        silver: "5000000",
-        golden: "15000000",
-        special: "20000000",
+        id: 1,
+        title: "عادی",
+        from: 0,
+        to: 10000,
+    },
+    {
+        id: 2,
+        title: "برنزی",
+        from: 10000,
+        to: 500000,
+    },
+    {
+        id: 3,
+        title: "نقره ای",
+        from: 500000,
+        to: 1000000,
+    },
+    {
+        id: 4,
+        title: "طلایی",
+        from: 1000000,
+        to: 5000000,
+    },
+    {
+        id: 5,
+        title: "ویژه",
+        from: 5000000,
+        to: 10000000,
     },
 ]
 
 
 const columns = [
     {
-        accessorKey: "bronze",
-        header: () => {
+        accessorKey: "id",
+        header: ({ column }) => {
             return (
                 <Button
                     variant="ghost"
+                    onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
                 >
-                    برنزی
+                    ردیف
+                    <ArrowUpDown className="mr-2 h-4 w-4" />
                 </Button>
             )
         },
+        cell: ({ row }) => (
+            <div >{row.getValue("id")}</div>
+        ),
+    },
+    {
+        accessorKey: "title",
+        header: ({ column }) => {
+            return (
+                <Button
+                    variant="ghost"
+                    onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+                >
+                    عنوان سطح
+                    <ArrowUpDown className="mr-2 h-4 w-4" />
+                </Button>
+            )
+        },
+        cell: ({ row }) => <div className='pr-3'>{row.getValue("title")}</div>,
+    },
+    {
+        accessorKey: "from",
+        header: () => <div >حداقل خرید</div>,
         cell: ({ row }) => {
-            return <Input value={row.getValue("bronze")} />
+
+
+            return <div className="text-right font-medium">{Number(row.getValue("from")).toLocaleString()} </div>
         },
     },
     {
-        accessorKey: "silver",
+        accessorKey: "to",
         header: () => {
             return (
                 <Button
                     variant="ghost"
                 >
-                    نقره ای
+                    حداکثر خرید
                 </Button>
             )
         },
-        cell: ({ row }) => <Input value={row.getValue("silver")} />,
-    },
-    {
-        accessorKey: "golden",
-        header: () => {
-            return (
-                <Button
-                    variant="ghost"
-                >
-                    طلایی
-                </Button>
-            )
-        },
-        cell: ({ row }) => <Input value={row.getValue("golden")} />,
-    },
-    {
-        accessorKey: "special",
-        header: () => {
-            return (
-                <Button
-                    variant="ghost"
-                >
-                    ویژه
-                </Button>
-            )
-        },
-        cell: ({ row }) => {
-            return <Input value={row.getValue("special")} />
-        },
+        cell: ({ row }) => <div className='pr-5'>{Number(row.getValue("to")).toLocaleString()}</div>,
     },
 
 ]
 
-
+const filters = [];
 
 export default function CustomerLevels() {
     return (
@@ -94,10 +118,29 @@ export default function CustomerLevels() {
 
             {/* ===== Main ===== */}
             <Layout.Body>
-                <div className='mb-2 flex items-center justify-between space-y-2'>
+                <div className='mb-2 flex flex-wrap items-center justify-between'>
                     <h1 className='text-2xl font-bold tracking-tight'>سطح بندی مشتریان</h1>
+                    <AddCustomerLevel />
                 </div>
-                <EditableDataTable data={data} columns={columns} />
+                <div className='flex items-center gap-2 font-medium text-sm sm:text-[16px] mt-5'>
+                    بر اساس میزان خرید
+                    <Select defaultValue='apple'>
+                        <SelectTrigger className="w-[110px]">
+                            <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                            <SelectGroup>
+                                <SelectLabel>بازه زمانی</SelectLabel>
+                                <SelectItem value="apple" >ماهانه</SelectItem>
+                                <SelectItem value="banana">سه ماهه</SelectItem>
+                                <SelectItem value="blueberry">شش ماهه</SelectItem>
+                                <SelectItem value="grapes">سالانه</SelectItem>
+                            </SelectGroup>
+                        </SelectContent>
+                    </Select>
+                    مشتری (تومان)
+                </div>
+                <DataTable data={data} columns={columns} filters={filters} />
             </Layout.Body>
         </Layout>
     )
