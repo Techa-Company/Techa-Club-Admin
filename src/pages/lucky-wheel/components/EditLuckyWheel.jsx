@@ -30,7 +30,7 @@ export function EditLuckyWheel() {
                 <DialogHeader >
                     <DialogTitle>ویرایش گزینه</DialogTitle>
                 </DialogHeader>
-                <div className="grid grid-cols-2 items-center gap-5">
+                <div className="grid grid-cols-2 items-center gap-5 mt-5">
                     <div className="grid flex-1 gap-2">
                         <Input placeholder="عنوان" />
                     </div>

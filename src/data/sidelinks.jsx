@@ -157,7 +157,7 @@ export const sidelinks = [
       {
         title: "بنر داشبورد مشتریان",
         label: "",
-        href: "/analysis",
+        href: "setting/banner",
         icon: <IconHexagonNumber2 size={18} />,
       },
       {

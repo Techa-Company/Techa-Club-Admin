@@ -1,53 +1,33 @@
-// import { Button } from '@/components/custom/button'
-
 import Layout from '../layout/Layout'
 import { UserNavbar } from '@/components/UserNavbar'
 import { Search } from '@/components/Search'
 import { Navbar } from '@/components/Navbar'
 import { Button } from '@/components/button'
 import { DataTable } from '@/components/common/DataTable'
-import { AddPoll } from './components/AddPoll'
 import { ArrowUpDown, Trash2 } from 'lucide-react'
-import { EditPoll } from './components/EditPoll'
-import { PollStatistics } from './components/PollStatistics'
+import { AddBanner } from './components/AddBanner'
+import { EditBanner } from './components/EditBanner'
 
 
 const data = [
     {
         id: 1,
-        title: "نظر سنجی معلمان",
-        description: "معلمان",
-        score: 5,
-        from: "1403/12/12",
-        to: "1402/08/12"
+        image: "https://d39l2hkdp2esp1.cloudfront.net/img/photo/276766/276766_00_2x.jpg?20230817094604",
+        link: "techa.me",
+        status: true,
     },
     {
         id: 2,
-        title: "کیفیت پاسخگویی",
-        description: "دانشمندان",
-        score: 3.5,
-        from: "1403/12/12",
-        to: "1402/08/12"
-
+        image: "https://d39l2hkdp2esp1.cloudfront.net/img/photo/276856/276856_00_2x.jpg?20230824115607",
+        link: "techa.me",
+        status: false,
     },
     {
         id: 3,
-        title: "تنوع فروشگاه",
-        description: "محصولات",
-        score: 4,
-        from: "1403/12/12",
-        to: "1402/08/12"
-
+        image: "https://d39l2hkdp2esp1.cloudfront.net/img/photo/276770/276770_00_2x.jpg?20230817094521",
+        link: "techa.me",
+        status: false,
     },
-    {
-        id: 4,
-        title: "رضایتمندی",
-        description: "بهبود کیفیت",
-        score: 1,
-        from: "1403/12/12",
-        to: "1402/08/12"
-    },
-
 ]
 
 
@@ -55,79 +35,57 @@ const columns = [
 
     {
         accessorKey: "id",
-        header: "ردیف",
+        header: ({ column }) => {
+            return (
+                <Button
+                    variant="ghost"
+                    onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+                >
+                    ردیف
+                    <ArrowUpDown className="mr-2 h-4 w-4" />
+                </Button>
+            )
+        },
         cell: ({ row }) => (
             <div >{row.getValue("id")}</div>
         ),
     },
     {
-        accessorKey: "title",
-        header: ({ column }) => {
+        accessorKey: "image",
+        header: () => {
             return (
                 <Button
                     variant="ghost"
-                    onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
                 >
-                    عنوان
-                    <ArrowUpDown className="mr-2 h-4 w-4" />
+                    تصویر
                 </Button>
             )
         },
-        cell: ({ row }) => <div className="lowercase">{row.getValue("title")}</div>,
-    },
-    {
-        accessorKey: "description",
-        header: () => <div >توضیحات</div>,
         cell: ({ row }) => {
-            return <div className="text-right font-medium">{row.getValue("description")} </div>
+            return <img className="w-96 rounded" src={row.getValue("image")} />
         },
     },
     {
-        accessorKey: "score",
+        accessorKey: "link",
+        header: "لینک",
+        cell: ({ row }) => <div >{row.getValue("link")}</div>,
+    },
+    {
+        accessorKey: "status",
         header: ({ column }) => {
             return (
                 <Button
                     variant="ghost"
                     onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
                 >
-                    امتیاز
+                    وضعیت
                     <ArrowUpDown className="mr-2 h-4 w-4" />
                 </Button>
             )
         },
-        cell: ({ row }) => <div className="lowercase">{row.getValue("score")}</div>,
+        cell: ({ row }) => <div>{row.getValue("status") ? "فعال" : "غیرفعال"}</div>,
     },
 
-    {
-        accessorKey: "from",
-        header: ({ column }) => {
-            return (
-                <Button
-                    variant="ghost"
-                    onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-                >
-                    تاریخ ثبت
-                    <ArrowUpDown className="mr-2 h-4 w-4" />
-                </Button>
-            )
-        },
-        cell: ({ row }) => <div >{row.getValue("from")}</div>,
-    },
-    {
-        accessorKey: "to",
-        header: ({ column }) => {
-            return (
-                <Button
-                    variant="ghost"
-                    onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-                >
-                    تاریخ انقضاء
-                    <ArrowUpDown className="mr-2 h-4 w-4" />
-                </Button>
-            )
-        },
-        cell: ({ row }) => <div >{row.getValue("to")}</div>,
-    },
     {
         id: "actions",
         enableHiding: false,
@@ -135,8 +93,7 @@ const columns = [
 
         cell: () => (
             <div className='flex gap-2 items-center'>
-                <PollStatistics />
-                <EditPoll />
+                <EditBanner />
                 <Trash2 className='cursor-pointer text-red-500' />
             </div>
         )
@@ -145,16 +102,12 @@ const columns = [
 
 const filters = [
     {
-        value: "title",
-        placeholder: "عنوان"
-    },
-    {
-        value: "score",
-        placeholder: "امتیاز"
-    },
+        value: "status",
+        placeholder: "وضعیت"
+    }
 ]
 
-export default function Polls() {
+export default function Banners() {
     return (
         <Layout>
             {/* ===== Top Heading ===== */}
@@ -170,13 +123,12 @@ export default function Polls() {
             {/* ===== Main ===== */}
             <Layout.Body>
                 <div className='mb-2 flex items-center justify-between space-y-2'>
-                    <h1 className='text-2xl font-bold tracking-tight'>لیست نظرسنجی ها</h1>
+                    <h1 className='text-2xl font-bold tracking-tight'>بنر ها</h1>
                     <div className='flex items-center gap-3'>
                         {/* <Button >برسی کد جایزه</Button> */}
-                        <AddPoll />
+                        <AddBanner />
                     </div>
                 </div>
-
                 <DataTable data={data} columns={columns} filters={filters} />
             </Layout.Body>
         </Layout>

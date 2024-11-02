@@ -34,7 +34,7 @@ export function AddCustomer() {
                         اطلاعات مشتری را کامل وارد کنید.
                     </DialogDescription>
                 </DialogHeader>
-                <div className="grid grid-cols-2 items-center gap-5">
+                <div className="grid grid-cols-2 items-center gap-5 mt-5">
                     <div className="grid flex-1 gap-2">
                         <Input placeholder="نام" />
                     </div>

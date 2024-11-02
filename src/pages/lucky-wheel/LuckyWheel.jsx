@@ -23,7 +23,7 @@ const data = [
         id: 2,
         title: "سفر به مکه",
         type: "سفر",
-        color: "#FFF000",
+        color: "#F10000",
         status: false,
 
     },
@@ -31,21 +31,21 @@ const data = [
         id: 3,
         title: "بلیط سینما",
         type: "تماشا",
-        color: "#FFF000",
+        color: "#CCCCCC",
         status: false,
     },
     {
         id: 4,
         title: "پوچ",
         type: "تلاش مجدد",
-        color: "#FFF000",
+        color: "#1515ff",
         status: true,
     },
     {
         id: 5,
         title: "تخفیف 50 درصدی بیمه",
         type: "کد تخفیف",
-        color: "#FFF000",
+        color: "#00FFFF",
         status: false,
     },
 ]
@@ -94,7 +94,7 @@ const columns = [
         accessorKey: "color",
         header: () => <div >رنگ</div>,
         cell: ({ row }) => {
-            return <div className="text-right font-medium">{row.getValue("color")} </div>
+            return <div style={{ background: row.getValue("color") }} className={`text-right font-medium w-fit px-2 py-1 rounded`}>{row.getValue("color")} </div>
         },
     },
     {

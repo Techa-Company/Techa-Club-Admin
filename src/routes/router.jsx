@@ -154,12 +154,12 @@ const router = createBrowserRouter([
                     Component: (await import('@/pages/poll/Polls')).default,
                 }),
             },
-            // {
-            //     path: 'extra-components',
-            //     lazy: async () => ({
-            //         Component: (await import('@/pages/extra-components')).default,
-            //     }),
-            // },
+            {
+                path: 'setting/banner',
+                lazy: async () => ({
+                    Component: (await import('@/pages/setting/Banners')).default,
+                }),
+            },
             // {
             //     path: 'settings',
             //     lazy: async () => ({
