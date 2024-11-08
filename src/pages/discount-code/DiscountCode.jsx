@@ -13,6 +13,7 @@ const data = [
         id: 1,
         title: "کد تخفیف اول",
         mobile: "09195993264",
+        type: "نوع اول",
         icon: "https://cdn.dribbble.com/users/1787323/screenshots/16687587/media/c3a6fa9c8f0779a0bdd4236fd7b4d63f.png",
         code: "100",
         from: "1403/05/15",
@@ -23,6 +24,7 @@ const data = [
         id: 2,
         title: "کد تخفیف اول",
         mobile: "09195993264",
+        type: "نوع دوم",
         icon: "https://cdn.dribbble.com/users/1787323/screenshots/16687587/media/c3a6fa9c8f0779a0bdd4236fd7b4d63f.png",
         code: "100",
         from: "1403/05/15",
@@ -33,6 +35,7 @@ const data = [
         id: 3,
         title: "کد تخفیف اول",
         mobile: "09195993264",
+        type: "نوع سوم",
         icon: "https://cdn.dribbble.com/users/1787323/screenshots/16687587/media/c3a6fa9c8f0779a0bdd4236fd7b4d63f.png",
         code: "100",
         from: "1403/05/15",
@@ -82,6 +85,21 @@ const columns = [
             )
         },
         cell: ({ row }) => <div >{row.getValue("mobile")}</div>,
+    },
+    {
+        accessorKey: "type",
+        header: ({ column }) => {
+            return (
+                <Button
+                    variant="ghost"
+                    onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+                >
+                    نوع
+                    <ArrowUpDown className="mr-2 h-4 w-4" />
+                </Button>
+            )
+        },
+        cell: ({ row }) => <div >{row.getValue("type")}</div>,
     },
     {
         accessorKey: "code",
@@ -147,8 +165,12 @@ const columns = [
 
 const filters = [
     {
-        value: "code",
-        placeholder: "شارژ"
+        value: "title",
+        placeholder: "عنوان"
+    },
+    {
+        value: "type",
+        placeholder: "نوع"
     }
 ]
 

@@ -13,9 +13,9 @@ import { Search } from '@/components/Search'
 import { Navbar } from '@/components/Navbar'
 import { Button } from '@/components/button'
 import DashboardChart from './components/DashboardChart'
-import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
-import { bronze, golden, normal, silver, special } from '@/data/tableData'
-import { CreditCard, Package, TicketPercent, Users } from 'lucide-react'
+import { ChartColumnBig, CreditCard, Package, TableProperties, TicketPercent, Users } from 'lucide-react'
+import DashboardTable from './components/DashboardTable'
+import DashboardDiscount from './components/DashboardDiscount'
 // import ThemeSwitch from '@/components/theme-switch'
 // import { RecentSales } from './components/recent-sales'
 // import { Overview } from './components/overview'
@@ -68,8 +68,8 @@ export default function Dashboard() {
                                 </CardHeader>
                                 <CardContent>
                                     <div className='text-2xl font-bold'>125,554 نفر</div>
-                                    <p className='text-xs text-muted-foreground'>
-                                        +20.1% نسبت به ماه گذشته
+                                    <p className='text-sm text-muted-foreground'>
+                                        <span className='text-green-500'>+20.1%</span> نسبت به ماه گذشته
                                     </p>
                                 </CardContent>
                             </Card>
@@ -81,8 +81,8 @@ export default function Dashboard() {
                                 </CardHeader>
                                 <CardContent>
                                     <div className='text-2xl font-bold'>12,320 کالا</div>
-                                    <p className='text-xs text-muted-foreground'>
-                                        +19% نسبت به ماه گذشته
+                                    <p className='text-sm text-muted-foreground'>
+                                        <span className='text-red-500'>-19%</span> نسبت به ماه گذشته
                                     </p>
                                 </CardContent>
                             </Card>
@@ -111,162 +111,45 @@ export default function Dashboard() {
                             </Card>
                         </div>
                         <div className='grid grid-cols-1 gap-4 lg:grid-cols-7'>
-                            <Card className='col-span-1 lg:col-span-4'>
+                            <Card className='col-span-1 lg:col-span-4 relative'>
                                 <CardHeader>
                                     {/* <CardTitle>Overview</CardTitle> */}
                                     <div className="flex flex-1 flex-col justify-center gap-1 px-6">
-                                        <CardTitle>سطح کاربران - تعاملی</CardTitle>
+                                        <CardTitle>سطح کاربران</CardTitle>
                                         <CardDescription>
-                                            نمایش کل بازدید کنندگان در یکسال گذشته
+                                            تغییرات تعداد کاربران در سال گذشته
                                         </CardDescription>
                                     </div>
                                 </CardHeader>
                                 <CardContent className='pl-2'>
-                                    {/* <Overview /> */}
-                                    <DashboardChart />
+                                    <Tabs defaultValue="chart" >
+                                        <TabsList className="grid grid-cols-2 absolute top-7 left-5 h-12">
+                                            <TabsTrigger value="chart">
+                                                <ChartColumnBig />
+                                            </TabsTrigger>
+                                            <TabsTrigger value="table">
+                                                <TableProperties />
+                                            </TabsTrigger>
+                                        </TabsList>
+                                        <TabsContent value="chart">
+                                            {/* <Overview /> */}
+                                            <DashboardChart />
+                                        </TabsContent>
+                                        <TabsContent value="table">
+                                            <DashboardTable />
+                                        </TabsContent>
+                                    </Tabs>
                                 </CardContent>
                             </Card>
                             <Card className='col-span-1 lg:col-span-3'>
                                 <CardHeader>
-                                    <CardTitle>سطح کاربران</CardTitle>
+                                    <CardTitle>کد های تخفیف</CardTitle>
                                     <CardDescription>
-                                        نمایش سطح کاربران در یک نگاه
+                                        آخرین کد های تخفیف
                                     </CardDescription>
                                 </CardHeader>
                                 <CardContent>
-                                    <Tabs
-                                        orientation='vertical'
-                                        defaultValue='normal'
-                                        className='space-y-4'
-                                    >
-                                        <div className='w-full overflow-x-auto pb-2'>
-                                            <TabsList>
-                                                <TabsTrigger value='normal'>عادی</TabsTrigger>
-                                                <TabsTrigger value='bronze'>برنزی</TabsTrigger>
-                                                <TabsTrigger value='silver'>نقره ای</TabsTrigger>
-                                                <TabsTrigger value='golden'>طلایی</TabsTrigger>
-                                                <TabsTrigger value='special'>ویژه</TabsTrigger>
-                                            </TabsList>
-                                        </div>
-                                        <TabsContent value="normal">
-                                            <Table>
-                                                <TableCaption>لیستی از کاربران سطح عادی</TableCaption>
-                                                <TableHeader >
-                                                    <TableRow>
-                                                        <TableHead className="text-right font-semibold px-0 pr-3">شروع مبلغ ماهانه</TableHead>
-                                                        <TableHead className="text-right font-semibold px-0 pr-3">پایان مبلغ ماهانه</TableHead>
-                                                        <TableHead className="text-right font-semibold px-0 pr-3">تعداد مشتریان</TableHead>
-                                                        <TableHead className="text-right font-semibold px-0 pr-3">سطح</TableHead>
-                                                    </TableRow>
-                                                </TableHeader>
-                                                <TableBody>
-                                                    {normal.map((data) => (
-                                                        <TableRow key={data.from}>
-                                                            <TableCell className="font-medium px-5">{data.from.toLocaleString()}</TableCell>
-                                                            <TableCell className="px-5">{data.to.toLocaleString()}</TableCell>
-                                                            <TableCell className="px-5">{data.users}</TableCell>
-                                                            <TableCell className="px-5">{data.level}</TableCell>
-                                                        </TableRow>
-                                                    ))}
-                                                </TableBody>
-                                            </Table>
-                                        </TabsContent>
-                                        <TabsContent value="bronze">
-                                            <Table>
-                                                <TableCaption>لیستی از کاربران سطح برنزی</TableCaption>
-                                                <TableHeader >
-                                                    <TableRow>
-                                                        <TableHead className="text-right font-semibold px-0 pr-3">شروع مبلغ ماهانه</TableHead>
-                                                        <TableHead className="text-right font-semibold px-0 pr-3">پایان مبلغ ماهانه</TableHead>
-                                                        <TableHead className="text-right font-semibold px-0 pr-3">تعداد مشتریان</TableHead>
-                                                        <TableHead className="text-right font-semibold px-0 pr-3">سطح</TableHead>
-                                                    </TableRow>
-                                                </TableHeader>
-                                                <TableBody>
-                                                    {bronze.map((data) => (
-                                                        <TableRow key={data.from}>
-                                                            <TableCell className="font-medium px-5">{data.from.toLocaleString()}</TableCell>
-                                                            <TableCell className="px-5">{data.to.toLocaleString()}</TableCell>
-                                                            <TableCell className="px-5">{data.users}</TableCell>
-                                                            <TableCell className="px-5">{data.level}</TableCell>
-                                                        </TableRow>
-                                                    ))}
-                                                </TableBody>
-                                            </Table>
-                                        </TabsContent>
-                                        <TabsContent value="silver">
-                                            <Table>
-                                                <TableCaption>لیستی از کاربران سطح نقره ای</TableCaption>
-                                                <TableHeader >
-                                                    <TableRow>
-                                                        <TableHead className="text-right font-semibold px-0 pr-3">شروع مبلغ ماهانه</TableHead>
-                                                        <TableHead className="text-right font-semibold px-0 pr-3">پایان مبلغ ماهانه</TableHead>
-                                                        <TableHead className="text-right font-semibold px-0 pr-3">تعداد مشتریان</TableHead>
-                                                        <TableHead className="text-right font-semibold px-0 pr-3">سطح</TableHead>
-                                                    </TableRow>
-                                                </TableHeader>
-                                                <TableBody>
-                                                    {silver.map((data) => (
-                                                        <TableRow key={data.from}>
-                                                            <TableCell className="font-medium px-5">{data.from.toLocaleString()}</TableCell>
-                                                            <TableCell className="px-5">{data.to.toLocaleString()}</TableCell>
-                                                            <TableCell className="px-5">{data.users}</TableCell>
-                                                            <TableCell className="px-5">{data.level}</TableCell>
-                                                        </TableRow>
-                                                    ))}
-                                                </TableBody>
-                                            </Table>
-                                        </TabsContent>
-                                        <TabsContent value="golden">
-                                            <Table>
-                                                <TableCaption>لیستی از کاربران سطح طلایی</TableCaption>
-                                                <TableHeader >
-                                                    <TableRow>
-                                                        <TableHead className="text-right font-semibold px-0 pr-3">شروع مبلغ ماهانه</TableHead>
-                                                        <TableHead className="text-right font-semibold px-0 pr-3">پایان مبلغ ماهانه</TableHead>
-                                                        <TableHead className="text-right font-semibold px-0 pr-3">تعداد مشتریان</TableHead>
-                                                        <TableHead className="text-right font-semibold px-0 pr-3">سطح</TableHead>
-                                                    </TableRow>
-                                                </TableHeader>
-                                                <TableBody>
-                                                    {golden.map((data) => (
-                                                        <TableRow key={data.from}>
-                                                            <TableCell className="font-medium px-5">{data.from.toLocaleString()}</TableCell>
-                                                            <TableCell className="px-5">{data.to.toLocaleString()}</TableCell>
-                                                            <TableCell className="px-5">{data.users}</TableCell>
-                                                            <TableCell className="px-5">{data.level}</TableCell>
-                                                        </TableRow>
-                                                    ))}
-                                                </TableBody>
-                                            </Table>
-                                        </TabsContent>
-                                        <TabsContent value="special">
-                                            <Table>
-                                                <TableCaption>لیستی از کاربران سطح ویژه</TableCaption>
-                                                <TableHeader >
-                                                    <TableRow>
-                                                        <TableHead className="text-right font-semibold px-0 pr-3">شروع مبلغ ماهانه</TableHead>
-                                                        <TableHead className="text-right font-semibold px-0 pr-3">پایان مبلغ ماهانه</TableHead>
-                                                        <TableHead className="text-right font-semibold px-0 pr-3">تعداد مشتریان</TableHead>
-                                                        <TableHead className="text-right font-semibold px-0 pr-3">سطح</TableHead>
-                                                    </TableRow>
-                                                </TableHeader>
-                                                <TableBody>
-                                                    {special.map((data) => (
-                                                        <TableRow key={data.from}>
-                                                            <TableCell className="font-medium px-5">{data.from.toLocaleString()}</TableCell>
-                                                            <TableCell className="px-5">{data.to.toLocaleString()}</TableCell>
-                                                            <TableCell className="px-5">{data.users}</TableCell>
-                                                            <TableCell className="px-5">{data.level}</TableCell>
-                                                        </TableRow>
-                                                    ))}
-                                                </TableBody>
-                                            </Table>
-                                        </TabsContent>
-                                    </Tabs>
-                                    {/* <RecentSales /> */}
-
-
+                                    <DashboardDiscount />
                                 </CardContent>
                             </Card>
                         </div>

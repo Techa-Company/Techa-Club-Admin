@@ -1,5 +1,5 @@
 import * as React from "react"
-import { Bar, BarChart, CartesianGrid, XAxis } from "recharts"
+import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from "recharts"
 
 import {
     Card,
@@ -18,11 +18,11 @@ const persianMonths = [
 ];
 
 const allData = [
-    { label: "کاربران عادی", value: 500 },
-    { label: "کاربران برنزی", value: 200 },
-    { label: "کاربران نقره ای", value: 300 },
-    { label: "کاربران طلایی", value: 700 },
-    { label: "کاربران ویژه", value: 500 },
+    { id: "normal", label: "کاربران عادی", value: 500 },
+    { id: "bronze", label: "کاربران برنزی", value: 200 },
+    { id: "silver", label: "کاربران نقره ای", value: 300 },
+    { id: "golden", label: "کاربران طلایی", value: 700 },
+    { id: "special", label: "کاربران ویژه", value: 500 },
 ]
 
 const chartData = [
@@ -101,7 +101,7 @@ function DashboardChart() {
                             <button
                                 key={chart}
                                 data-active={activeChart === chart}
-                                className="relative z-30 flex flex-1 min-w-fit flex-col justify-center items-center gap-1 border-t px-5 py-4 even:border-l data-[active=true]:bg-muted/50 sm:border-l sm:border-t-0 sm:px-8 sm:py-6"
+                                className="relative z-30 flex flex-1 min-w-fit flex-col justify-center items-center gap-1 border-t px-5 py-4 even:border-l data-[active=true]:bg-slate-100 sm:border-l sm:border-t-0 sm:px-8 sm:py-6"
                                 onClick={() => setActiveChart(chart)}
                             >
                                 <span className="text-xs text-muted-foreground">
@@ -140,6 +140,11 @@ function DashboardChart() {
                                     minTickGap={32}
                                     tickFormatter={(value) => value}
                                 />
+                                <YAxis
+                                    width={25}
+                                    tickMargin={25}
+
+                                />
                                 <ChartTooltip
                                     content={
                                         <ChartTooltipContent
@@ -149,7 +154,7 @@ function DashboardChart() {
                                         />
                                     }
                                 />
-                                <Bar className="cursor-pointer" dataKey="value" fill={`var(--color-${activeChart})`} />
+                                <Bar onClick={e => setActiveChart(e.id)} className="cursor-pointer" dataKey="value" fill={`var(--color-${activeChart})`} />
                             </BarChart>
                         </ChartContainer>
                         :
@@ -178,7 +183,13 @@ function DashboardChart() {
                                         console.log(year)
                                         return `${day}  ${persianMonths[Number(month) - 1]}`
                                     }}
+
                                 />
+                                <YAxis
+                                    width={25}
+                                    tickMargin={25}
+                                />
+
                                 <ChartTooltip
                                     content={
                                         <ChartTooltipContent
@@ -193,7 +204,8 @@ function DashboardChart() {
                                         />
                                     }
                                 />
-                                <Bar className="cursor-pointer" dataKey={activeChart} fill={`var(--color-${activeChart})`} />
+                                <Bar className="cursor-pointer" dataKey={activeChart} fill={`var(--color-${activeChart})`}
+                                />
                             </BarChart>
                         </ChartContainer>
                 }
