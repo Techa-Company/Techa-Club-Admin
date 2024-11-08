@@ -7,10 +7,10 @@ import {
     DropdownMenuItem,
     DropdownMenuLabel,
     DropdownMenuSeparator,
-    DropdownMenuShortcut,
     DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import { Button } from './button'
+import { Link } from 'react-router-dom'
 
 export function UserNavbar() {
     return (
@@ -18,7 +18,7 @@ export function UserNavbar() {
             <DropdownMenuTrigger asChild>
                 <Button variant='ghost' className='relative h-8 w-8 rounded-full'>
                     <Avatar className='h-10 w-10'>
-                        <AvatarImage src='https://media.licdn.com/dms/image/v2/D4D35AQEEK8sJVUUeag/profile-framedphoto-shrink_200_200/profile-framedphoto-shrink_200_200/0/1726985143395?e=1729418400&v=beta&t=qe1HVugJpEcg75arJ4ewCnSVmxmP1ncd9MPugUPYSxw' alt='@shadcn' />
+                        <AvatarImage src='https://avatars.githubusercontent.com/u/91675032?v=4' alt='@shadcn' />
                         <AvatarFallback>RJ</AvatarFallback>
                     </Avatar>
                 </Button>
@@ -35,7 +35,9 @@ export function UserNavbar() {
                 <DropdownMenuSeparator />
                 <DropdownMenuGroup>
                     <DropdownMenuItem>
-                        پروفایل
+                        <Link to="/account/profile">
+                            پروفایل
+                        </Link>
                     </DropdownMenuItem>
                     <DropdownMenuItem>
                         سبد خرید

@@ -166,10 +166,16 @@ const router = createBrowserRouter([
                     Component: (await import('@/pages/setting/Setting')).default,
                 }),
             },
+            {
+                path: 'account/profile',
+                lazy: async () => ({
+                    Component: (await import('@/pages/account/Profile')).default,
+                }),
+            },
         ],
     },
     // Error routes
-    { path: '/500', Component: GeneralError },
+    // { path: '/500', Component: GeneralError },
     { path: '/404', Component: NotFoundError },
     { path: '/503', Component: MaintenanceError },
     { path: '/401', Component: UnauthorisedError },

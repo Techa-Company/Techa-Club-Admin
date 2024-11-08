@@ -31,7 +31,7 @@ const DashboardDiscount = () => {
                     </TableHeader>
                     <TableBody>
                         {activeDiscounts.map((data) => (
-                            <TableRow key={data.from}>
+                            <TableRow key={data.id}>
                                 <TableCell className="font-medium px-5">{data.id}</TableCell>
                                 <TableCell className="px-5">{data.title}</TableCell>
                                 <TableCell className="px-5">{data.type}</TableCell>
@@ -58,7 +58,7 @@ const DashboardDiscount = () => {
                     </TableHeader>
                     <TableBody>
                         {usedDiscounts.map((data) => (
-                            <TableRow key={data.from}>
+                            <TableRow key={data.id}>
                                 <TableCell className="font-medium px-5">{data.id}</TableCell>
                                 <TableCell className="px-5">{data.title}</TableCell>
                                 <TableCell className="px-5">{data.type}</TableCell>
@@ -85,7 +85,7 @@ const DashboardDiscount = () => {
                     </TableHeader>
                     <TableBody>
                         {expiredDiscounts.map((data) => (
-                            <TableRow key={data.from}>
+                            <TableRow key={data.id}>
                                 <TableCell className="font-medium px-5">{data.id}</TableCell>
                                 <TableCell className="px-5">{data.title}</TableCell>
                                 <TableCell className="px-5">{data.type}</TableCell>
