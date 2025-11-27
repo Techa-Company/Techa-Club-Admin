@@ -20,12 +20,12 @@ jobs:
       
       - name: Verify Output Folder
         run: |
-          echo "Project Type: react"
-          echo "Expecting output folder: build"
+          echo "Project Type: "
+          echo "Expecting output folder: dist"
           
-          if [ ! -d "build" ]; then
+          if [ ! -d "dist" ]; then
             
-            if [ "build" == "out" ] && [ -d ".next" ]; then
+            if [ "dist" == "out" ] && [ -d ".next" ]; then
                 echo "---------------------------------------------------"
                 echo "❌ Error: Next.js Static Export not detected."
                 echo "Found '.next' folder (SSR) but expected 'out' (Static)."
@@ -36,8 +36,8 @@ jobs:
                 exit 1
             fi
 
-            echo "Error: The folder 'build' was not created by the build command."
-            echo "Since you selected 'react', we expected 'build'."
+            echo "Error: The folder 'dist' was not created by the build command."
+            echo "Since you selected '', we expected 'dist'."
             echo "Please check your build script or project configuration."
             ls -la 
             exit 1
@@ -46,7 +46,7 @@ jobs:
       - uses: actions/upload-artifact@v4
         with:
           name: build-artifact
-          path: build
+          path: dist
 
   deploy:
     needs: build
@@ -64,8 +64,8 @@ jobs:
           $source = ".\temp_dl"
 
           # هوشمندی سمت سرور: هندل کردن پوشه‌های تو در تو
-          if (Test-Path "$source\build\index.html") { 
-              $source = "$source\build" 
+          if (Test-Path "$source\dist\index.html") { 
+              $source = "$source\dist" 
           }
           
           Write-Host "Deploying from: $source"
