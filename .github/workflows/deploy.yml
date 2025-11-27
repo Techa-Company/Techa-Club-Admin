@@ -1,0 +1,85 @@
+
+name: CD Pipeline - techatest
+
+on:
+  push:
+    branches: [ "main", "master" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          
+      - run: npm install
+      - run: npm run build
+      
+      - name: Verify Output Folder
+        run: |
+          echo "Project Type: react"
+          echo "Expecting output folder: build"
+          
+          if [ ! -d "build" ]; then
+            
+            if [ "build" == "out" ] && [ -d ".next" ]; then
+                echo "---------------------------------------------------"
+                echo "❌ Error: Next.js Static Export not detected."
+                echo "Found '.next' folder (SSR) but expected 'out' (Static)."
+                echo ""
+                echo "To deploy Next.js to IIS (Static Hosting), you MUST enable Static Exports."
+                echo "👉 Solution: Open 'next.config.js' (or .ts) and add: output: 'export'"
+                echo "---------------------------------------------------"
+                exit 1
+            fi
+
+            echo "Error: The folder 'build' was not created by the build command."
+            echo "Since you selected 'react', we expected 'build'."
+            echo "Please check your build script or project configuration."
+            ls -la 
+            exit 1
+          fi
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: build-artifact
+          path: build
+
+  deploy:
+    needs: build
+    runs-on: [self-hosted, windows, x64]
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: build-artifact
+          path: ./temp_dl
+      
+      - name: Deploy to IIS
+        shell: powershell
+        run: |
+          $dest = "C:\inetpub\wwwroot\projects\techatest"
+          $source = ".\temp_dl"
+
+          # هوشمندی سمت سرور: هندل کردن پوشه‌های تو در تو
+          if (Test-Path "$source\build\index.html") { 
+              $source = "$source\build" 
+          }
+          
+          Write-Host "Deploying from: $source"
+
+          if (Test-Path $dest) { Remove-Item "$dest\*" -Recurse -Force -ErrorAction SilentlyContinue }
+          
+          if (-not (Test-Path $dest)) { New-Item -ItemType Directory -Force -Path $dest | Out-Null }
+          
+          Copy-Item -Path "$source\*" -Destination $dest -Recurse -Force
+          
+          $configPath = "$dest\web.config"
+          if (-not (Test-Path $configPath)) {
+             $content = '<?xml version="1.0" encoding="UTF-8"?><configuration><system.webServer><rewrite><rules><rule name="SPA" stopProcessing="true"><match url=".*" /><conditions logicalGrouping="MatchAll"><add input="{REQUEST_FILENAME}" matchType="IsFile" negate="true" /><add input="{REQUEST_FILENAME}" matchType="IsDirectory" negate="true" /></conditions><action type="Rewrite" url="/index.html" /></rule></rules></rewrite></system.webServer></configuration>'
+             Set-Content -Path $configPath -Value $content
+          }
+          
+          Remove-Item ".\temp_dl" -Recurse -Force -ErrorAction SilentlyContinue
