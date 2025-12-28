@@ -1,0 +1,15 @@
+import { createAsyncThunk } from "@reduxjs/toolkit"
+import { SP_fetch } from "@/services/api"
+
+export const fetchDashboard = createAsyncThunk(
+    'dashboard/fetchDashboard',
+    async (parameters, thunkAPI) => {
+        try {
+            const res = await SP_fetch('_dashboard_business', parameters)
+            console.log(res.Data)
+            return res.Data
+        } catch (err) {
+            return thunkAPI.rejectWithValue(err.message)
+        }
+    }
+)

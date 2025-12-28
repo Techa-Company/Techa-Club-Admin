@@ -16,6 +16,9 @@ import DashboardChart from './components/DashboardChart'
 import { ChartColumnBig, CreditCard, Package, TableProperties, TicketPercent, Users } from 'lucide-react'
 import DashboardTable from './components/DashboardTable'
 import DashboardDiscount from './components/DashboardDiscount'
+import { useDispatch, useSelector } from 'react-redux'
+import { useEffect } from 'react'
+import { fetchDashboard } from '@/features/dashboard/dashboardActions'
 // import ThemeSwitch from '@/components/theme-switch'
 // import { RecentSales } from './components/recent-sales'
 // import { Overview } from './components/overview'
@@ -24,6 +27,19 @@ import DashboardDiscount from './components/DashboardDiscount'
 
 
 export default function Dashboard() {
+
+
+    const dispatch = useDispatch()
+    const { loading, dashboard, error } = useSelector(state => state.dashboard)
+
+    console.log(dashboard)
+
+    useEffect(() => {
+        dispatch(fetchDashboard())
+    }, [dispatch])
+
+
+
     return (
         <Layout>
             {/* ===== Top Heading ===== */}
