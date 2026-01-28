@@ -1,214 +1,125 @@
 import * as React from "react"
-import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from "recharts"
+import { Bar, BarChart, CartesianGrid, XAxis, YAxis, Cell, Tooltip, ResponsiveContainer } from "recharts"
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
+import { Badge } from "@/components/ui/badge"
+import { Users } from "lucide-react"
 
-import {
-    Card,
-    CardContent,
-    CardHeader,
-} from "@/components/ui/card"
-import {
-    ChartContainer,
-    ChartTooltip,
-    ChartTooltipContent,
-} from "@/components/ui/chart"
-
-const persianMonths = [
-    'فروردین', 'اردیبهشت', 'خرداد', 'تیر', 'مرداد', 'شهریور',
-    'مهر', 'آبان', 'آذر', 'دی', 'بهمن', 'اسفند'
-];
-
-const allData = [
-    { id: "normal", label: "کاربران عادی", value: 500 },
-    { id: "bronze", label: "کاربران برنزی", value: 200 },
-    { id: "silver", label: "کاربران نقره ای", value: 300 },
-    { id: "golden", label: "کاربران طلایی", value: 700 },
-    { id: "special", label: "کاربران ویژه", value: 500 },
-]
-
-const chartData = [
-    { date: "1403-1-1", normal: 10, bronze: 5, silver: 5, golden: 10, special: 120 },
-    { date: "1403-2-1", normal: 20, bronze: 10, silver: 10, golden: 20, special: 110 },
-    { date: "1403-3-1", normal: 30, bronze: 15, silver: 20, golden: 30, special: 100 },
-    { date: "1403-4-1", normal: 40, bronze: 20, silver: 10, golden: 40, special: 90 },
-    { date: "1403-5-1", normal: 50, bronze: 25, silver: 5, golden: 50, special: 80 },
-    { date: "1403-6-1", normal: 60, bronze: 30, silver: 10, golden: 60, special: 70 },
-    { date: "1403-7-1", normal: 70, bronze: 35, silver: 20, golden: 60, special: 60 },
-    { date: "1403-8-1", normal: 20, bronze: 40, silver: 10, golden: 50, special: 50 },
-    { date: "1403-9-1", normal: 40, bronze: 45, silver: 5, golden: 40, special: 40 },
-    { date: "1403-10-1", normal: 60, bronze: 50, silver: 10, golden: 30, special: 30 },
-    { date: "1403-11-1", normal: 80, bronze: 75, silver: 20, golden: 20, special: 20 },
-    { date: "1403-12-1", normal: 100, bronze: 100, silver: 10, golden: 10, special: 10 },
-]
-
-
-export const description = "An interactive bar chart"
-
-
-
+// کانفیگ رنگ‌ها (استفاده از متغیرهای CSS یا کدهای رنگی جذاب)
 const chartConfig = {
-    views: {
-        label: "تعداد کاربران",
-    },
-    all: {
-        label: "همه کاربران",
-        color: "hsl(var(--primary))",
-    },
-    normal: {
-        label: "کاربران عادی",
-        color: "hsl(var(--primary))",
-    },
-    bronze: {
-        label: "کاربران برنزی",
-        color: "hsl(var(--chart-1))",
-    },
-    silver: {
-        label: "کاربران نقره ای",
-        color: "hsl(var(--chart-4))",
-    },
-    golden: {
-        label: "کاربران طلایی",
-        color: "hsl(var(--chart-2))",
-    },
-    special: {
-        label: "کاربران ویژه",
-        color: "hsl(var(--chart-3))",
-    },
+    "بدون سطح": { label: "بدون سطح", colorStart: "#94a3b8", colorEnd: "#475569" }, // Slate
+    "عادی": { label: "عادی", colorStart: "#3b82f6", colorEnd: "#1d4ed8" }, // Blue
+    "برنزی": { label: "برنزی", colorStart: "#d97706", colorEnd: "#92400e" }, // Amber/Bronze
+    "نقره ای": { label: "نقره ای", colorStart: "#9ca3af", colorEnd: "#4b5563" }, // Gray/Silver
+    "طلائی": { label: "طلایی", colorStart: "#eab308", colorEnd: "#a16207" }, // Yellow/Gold
+    "ویژه": { label: "ویژه", colorStart: "#ef4444", colorEnd: "#b91c1c" }, // Red
 }
 
-function DashboardChart() {
-    const [activeChart, setActiveChart] = React.useState("all")
+// تابع کمکی برای حذف کاما و تبدیل به عدد
+const parseNum = (str) => Number(str?.toString().replace(/,/g, '')) || 0;
 
-    const total = React.useMemo(
-        () => ({
-            all: chartData.reduce((acc, curr) => acc + curr.normal + curr.bronze + curr.silver + curr.golden + curr.special, 0),
-            normal: chartData.reduce((acc, curr) => acc + curr.normal, 0),
-            bronze: chartData.reduce((acc, curr) => acc + curr.bronze, 0),
-            silver: chartData.reduce((acc, curr) => acc + curr.silver, 0),
-            golden: chartData.reduce((acc, curr) => acc + curr.golden, 0),
-            special: chartData.reduce((acc, curr) => acc + curr.special, 0),
-        }),
-        []
-    )
+function DashboardChart({ data }) {
+    // پردازش دیتا
+    const chartData = React.useMemo(() => {
+        if (!data || !Array.isArray(data)) return [];
+        return data.map(item => ({
+            name: item.f1,
+            count: parseNum(item.f3),
+            // مقادیر رنگ برای گرادینت
+            colorStart: chartConfig[item.f1]?.colorStart || "#3b82f6",
+            colorEnd: chartConfig[item.f1]?.colorEnd || "#1d4ed8",
+        }));
+    }, [data]);
+
+    const totalUsers = React.useMemo(() => {
+        return chartData.reduce((acc, curr) => acc + curr.count, 0);
+    }, [chartData]);
+
+    // کامپوننت تولتیپ سفارشی و خفن
+    const CustomTooltip = ({ active, payload, label }) => {
+        if (active && payload && payload.length) {
+            const data = payload[0].payload;
+            const percentage = totalUsers > 0 ? ((data.count / totalUsers) * 100).toFixed(1) : 0;
+
+            return (
+                <div className="bg-popover/95 backdrop-blur-sm border border-border p-3 rounded-lg shadow-xl outline-none">
+                    <p className="font-bold text-foreground mb-1 flex items-center gap-2">
+                        <span className="w-2 h-2 rounded-full" style={{ backgroundColor: data.colorStart }}></span>
+                        {label}
+                    </p>
+                    <div className="flex flex-col gap-1 text-sm">
+                        <div className="flex justify-between gap-4">
+                            <span className="text-muted-foreground">تعداد:</span>
+                            <span className="font-mono font-bold">{data.count.toLocaleString()}</span>
+                        </div>
+                        <div className="flex justify-between gap-4">
+                            <span className="text-muted-foreground">سهم:</span>
+                            <span className="font-mono font-bold text-emerald-500">{percentage}%</span>
+                        </div>
+                    </div>
+                </div>
+            );
+        }
+        return null;
+    };
 
     return (
-        <Card>
-            <CardHeader className="flex flex-col items-stretch space-y-0 border-b p-0">
-
-                <div className="flex flex-wrap">
-                    {["all", "normal", "bronze", "silver", "golden", "special"].map((key) => {
-                        const chart = key
-                        return (
-                            <button
-                                key={chart}
-                                data-active={activeChart === chart}
-                                className="relative z-30 flex flex-1 min-w-fit flex-col justify-center items-center gap-1 border-t px-5 py-4 even:border-l data-[active=true]:bg-slate-100 sm:border-l sm:border-t-0 sm:px-8 sm:py-6"
-                                onClick={() => setActiveChart(chart)}
-                            >
-                                <span className="text-xs text-muted-foreground">
-                                    {chartConfig[chart].label}
-                                </span>
-                                <span className="text-lg font-bold leading-none sm:text-3xl">
-                                    {/* {total[key].toLocaleString()} */}
-                                    {total[key]?.toLocaleString()}
-                                </span>
-                            </button>
-                        )
-                    })}
+        <Card className="shadow-sm border-border/50 overflow-hidden h-full">
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 border-b bg-muted/20">
+                <div className="flex flex-col gap-1">
+                    <CardTitle className="text-lg font-bold flex items-center gap-2">
+                        <Users className="w-5 h-5 text-primary" />
+                        توزیع کاربران
+                    </CardTitle>
+                    <CardDescription>نمودار سطح‌بندی مشتریان فروشگاه</CardDescription>
+                </div>
+                <div className="flex flex-col items-end">
+                    <span className="text-xs text-muted-foreground uppercase tracking-wider">مجموع کاربران</span>
+                    <span className="text-2xl font-bold font-mono text-primary">
+                        {totalUsers.toLocaleString()}
+                    </span>
                 </div>
             </CardHeader>
-            <CardContent className="p-2 sm:p-6">
-                {
-                    activeChart === "all" ?
-                        <ChartContainer
-                            config={chartConfig}
-                            className="aspect-auto h-[250px] w-full"
-                        >
-                            <BarChart
-                                accessibilityLayer
-                                data={allData}
-                                margin={{
-                                    left: 12,
-                                    right: 12,
-                                }}
-                            >
-                                <CartesianGrid vertical={false} />
-                                <XAxis
-                                    dataKey="label"
-                                    tickLine={false}
-                                    axisLine={false}
-                                    tickMargin={10}
-                                    minTickGap={32}
-                                    tickFormatter={(value) => value}
-                                />
-                                <YAxis
-                                    width={25}
-                                    tickMargin={25}
+            <CardContent className="p-1 sm:p-6">
+                <div className="h-[300px] w-full mt-4">
+                    <ResponsiveContainer width="100%" height="100%">
+                        <BarChart data={chartData} barSize={40}>
+                            {/* تعریف گرادینت‌ها */}
+                            <defs>
+                                {chartData.map((entry, index) => (
+                                    <linearGradient key={`grad-${index}`} id={`gradient-${index}`} x1="0" y1="0" x2="0" y2="1">
+                                        <stop offset="0%" stopColor={entry.colorStart} stopOpacity={1} />
+                                        <stop offset="100%" stopColor={entry.colorEnd} stopOpacity={1} />
+                                    </linearGradient>
+                                ))}
+                            </defs>
 
-                                />
-                                <ChartTooltip
-                                    content={
-                                        <ChartTooltipContent
-                                            className="w-[150px]"
-                                            nameKey="views"
-                                            labelFormatter={(value) => value}
-                                        />
-                                    }
-                                />
-                                <Bar onClick={e => setActiveChart(e.id)} className="cursor-pointer" dataKey="value" fill={`var(--color-${activeChart})`} />
-                            </BarChart>
-                        </ChartContainer>
-                        :
-                        <ChartContainer
-                            config={chartConfig}
-                            className="aspect-auto h-[250px] w-full"
-                        >
-                            <BarChart
-                                accessibilityLayer
-                                data={chartData}
-                                margin={{
-                                    left: 12,
-                                    right: 12,
-                                }}
-                            >
-                                <CartesianGrid vertical={false} />
-                                <XAxis
-                                    dataKey="date"
-                                    tickLine={false}
-                                    axisLine={false}
-                                    tickMargin={10}
-                                    minTickGap={32}
-                                    tickFormatter={(value) => {
-                                        const [year, month, day] = value.split('-');
-                                        // const persianMonth = persianMonths[Number(month) - 1]; // Convert month index to month name
-                                        console.log(year)
-                                        return `${day}  ${persianMonths[Number(month) - 1]}`
-                                    }}
+                            <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="hsl(var(--border))" opacity={0.4} />
 
-                                />
-                                <YAxis
-                                    width={25}
-                                    tickMargin={25}
-                                />
+                            <XAxis
+                                dataKey="name"
+                                axisLine={false}
+                                tickLine={false}
+                                tickMargin={15}
+                                tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 12 }}
+                            />
 
-                                <ChartTooltip
-                                    content={
-                                        <ChartTooltipContent
-                                            className="w-[150px]"
-                                            nameKey="views"
-                                            labelFormatter={(value) => {
-                                                const [year, month, day] = value.split('-');
-                                                const persianMonth = persianMonths[Number(month) - 1]; // Convert month index to month name
-                                                console.log(value, month, persianMonth)
-                                                return `${day}  ${persianMonths[Number(month) - 1]} ${year}`
-                                            }}
-                                        />
-                                    }
-                                />
-                                <Bar className="cursor-pointer" dataKey={activeChart} fill={`var(--color-${activeChart})`}
-                                />
-                            </BarChart>
-                        </ChartContainer>
-                }
+                            <YAxis
+                                axisLine={false}
+                                tickLine={false}
+                                tickFormatter={(value) => `${value}`}
+                                tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 12 }}
+                            />
+
+                            <Tooltip content={<CustomTooltip />} cursor={{ fill: 'hsl(var(--muted)/0.2)' }} />
+
+                            <Bar dataKey="count" radius={[8, 8, 0, 0]} animationDuration={1500}>
+                                {chartData.map((entry, index) => (
+                                    <Cell key={`cell-${index}`} fill={`url(#gradient-${index})`} />
+                                ))}
+                            </Bar>
+                        </BarChart>
+                    </ResponsiveContainer>
+                </div>
             </CardContent>
         </Card>
     )
