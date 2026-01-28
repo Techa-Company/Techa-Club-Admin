@@ -53,6 +53,12 @@ const router = createBrowserRouter([
                 }),
             },
             {
+                path: 'score-eshel',
+                lazy: async () => ({
+                    Component: (await import('@/pages/score-eshel/ScoreEshel')).default,
+                }),
+            },
+            {
                 path: 'prize-shelf',
                 lazy: async () => ({
                     Component: (await import('@/pages/prize-shelf/PrizeShelf')).default,

@@ -6,6 +6,10 @@ import { Button } from '@/components/button'
 import { DataTable } from '@/components/common/DataTable'
 import { ArrowUpDown } from 'lucide-react'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { useDispatch, useSelector } from 'react-redux'
+import { useNavigate } from 'react-router-dom'
+import { fetchCoupons } from '@/features/coupon/couponActions'
+import { useEffect } from 'react'
 
 
 const data = [
@@ -175,6 +179,18 @@ const filters = [
 ]
 
 export default function DiscountCode() {
+
+
+    const dispatch = useDispatch();
+    const navigate = useNavigate();
+    const { loading, coupons, error } = useSelector(state => state.coupon);
+
+    useEffect(() => {
+        dispatch(fetchCoupons());
+    }, [dispatch]);
+
+    console.log(coupons)
+
     return (
         <Layout>
             {/* ===== Top Heading ===== */}

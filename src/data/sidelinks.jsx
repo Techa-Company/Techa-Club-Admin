@@ -17,60 +17,28 @@ export const sidelinks = [
   {
     title: "مدیریت امتیازات",
     label: "",
-    href: "/apps",
+    href: "/score-eshel",
     icon: <Trophy size={18} />,
   },
   {
     title: "قفسه جوایز",
     label: "",
-    href: "",
+    href: "/prize-shelf",
     icon: <Gift size={18} />,
-    sub: [
-      {
-        title: "ایجاد جایزه",
-        label: "",
-        href: "/prize-shelf/new",
-        icon: <IconHexagonNumber1 size={18} />,
-      },
-      {
-        title: "لیست جایزه ها",
-        label: "",
-        href: "/prize-shelf",
-        icon: <IconHexagonNumber2 size={18} />,
-      },
-    ],
-  },
-  {
-    title: "مدیریت پیامک ها",
-    label: "",
-    href: "",
-    icon: <Mail size={18} />,
-    sub: [
-      {
-        title: "گزارش پیامک ها",
-        label: "",
-        href: "/sms-management",
-        icon: <IconHexagonNumber1 size={18} />,
-      },
-      {
-        title: "خرید بسته",
-        label: "",
-        href: "/buy-sms",
-        icon: <IconHexagonNumber2 size={18} />,
-      },
-      {
-        title: "لیست هزینه ها",
-        label: "",
-        href: "/expenses",
-        icon: <IconHexagonNumber3 size={18} />,
-      },
-      {
-        title: "قالب پیامکی",
-        label: "",
-        href: "/sms-template",
-        icon: <IconHexagonNumber4 size={18} />,
-      },
-    ],
+    // sub: [
+    //   {
+    //     title: "ایجاد جایزه",
+    //     label: "",
+    //     href: "/prize-shelf/new",
+    //     icon: <IconHexagonNumber1 size={18} />,
+    //   },
+    //   {
+    //     title: "لیست جایزه ها",
+    //     label: "",
+    //     href: "/prize-shelf",
+    //     icon: <IconHexagonNumber2 size={18} />,
+    //   },
+    // ],
   },
   {
     title: "کد های تخفیف",
@@ -135,6 +103,38 @@ export const sidelinks = [
     label: "",
     href: "/lucky-wheel",
     icon: <FerrisWheel size={18} />,
+  },
+  {
+    title: "مدیریت پیامک ها",
+    label: "",
+    href: "",
+    icon: <Mail size={18} />,
+    sub: [
+      {
+        title: "گزارش پیامک ها",
+        label: "",
+        href: "/sms-management",
+        icon: <IconHexagonNumber1 size={18} />,
+      },
+      {
+        title: "خرید بسته",
+        label: "",
+        href: "/buy-sms",
+        icon: <IconHexagonNumber2 size={18} />,
+      },
+      {
+        title: "لیست هزینه ها",
+        label: "",
+        href: "/expenses",
+        icon: <IconHexagonNumber3 size={18} />,
+      },
+      {
+        title: "قالب پیامکی",
+        label: "",
+        href: "/sms-template",
+        icon: <IconHexagonNumber4 size={18} />,
+      },
+    ],
   },
   {
     title: "نظرسنجی",
