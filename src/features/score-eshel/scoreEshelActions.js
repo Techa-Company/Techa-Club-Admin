@@ -2,11 +2,11 @@ import { createAsyncThunk } from "@reduxjs/toolkit"
 import { SP_fetch } from "@/services/api"
 
 
-export const fetchScenarios = createAsyncThunk(
+export const fetchScores = createAsyncThunk(
     'prize-shelf/fetchScenarios',
     async (parameters, thunkAPI) => {
         try {
-            const res = await SP_fetch('Form_Business_ForgotScenario', parameters)
+            const res = await SP_fetch('Form_Score_Eshel', parameters)
             console.log(res.Data)
             return res.Data
         } catch (err) {
@@ -16,11 +16,11 @@ export const fetchScenarios = createAsyncThunk(
 )
 
 
-export const createAndUpdateScenario = createAsyncThunk(
+export const createAndUpdateScore = createAsyncThunk(
     'prize-shelf/createAndUpdateScenario',
     async (parameters, thunkAPI) => {
         try {
-            const res = await SP_fetch('Save_Business_ForgotScenario', parameters)
+            const res = await SP_fetch('Save_Score_Eshel', parameters)
             console.log(res)
         } catch (error) {
             return thunkAPI.rejectWithValue(error.message)

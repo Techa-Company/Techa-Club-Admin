@@ -1,7 +1,7 @@
 // src/features/score-eshel/scoreEshelSlice.js
 
 import { createSlice } from '@reduxjs/toolkit'
-import { createAndUpdateScenario, fetchcenarios } from './scoreEshelActions'
+import { createAndUpdateScore, fetchScores } from './scoreEshelActions'
 
 const initialState = {
     scores: [],
@@ -16,27 +16,27 @@ const scoreEshelSlice = createSlice({
     reducers: {},
     extraReducers: builder => {
         builder
-            .addCase(fetchcenarios.pending, (state) => {
+            .addCase(fetchScores.pending, (state) => {
                 state.loading = true
                 state.error = null
             })
-            .addCase(fetchcenarios.fulfilled, (state, action) => {
+            .addCase(fetchScores.fulfilled, (state, action) => {
                 state.loading = false
                 state.scores = action.payload
             })
-            .addCase(fetchcenarios.rejected, (state, action) => {
+            .addCase(fetchScores.rejected, (state, action) => {
                 state.loading = false
                 state.error = action.payload
             })
-            .addCase(createAndUpdateScenario.pending, (state) => {
+            .addCase(createAndUpdateScore.pending, (state) => {
                 state.loading = true
                 state.error = null
             })
-            .addCase(createAndUpdateScenario.fulfilled, (state) => {
+            .addCase(createAndUpdateScore.fulfilled, (state) => {
                 state.loading = false
                 // state.docs = action.payload
             })
-            .addCase(createAndUpdateScenario.rejected, (state, action) => {
+            .addCase(createAndUpdateScore.rejected, (state, action) => {
                 state.loading = false
                 state.error = action.payload
             })

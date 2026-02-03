@@ -1,7 +1,7 @@
 // src/features/forgot-scenario/forgotScenarioSlice.js
 
 import { createSlice } from '@reduxjs/toolkit'
-import { createAndUpdateScore, fetchScores } from './forgotScenarioActions'
+import { createAndUpdateScenario, fetchScenarios } from './forgotScenarioActions'
 
 const initialState = {
     scenarios: [],
@@ -16,27 +16,27 @@ const forgotScenarioSlice = createSlice({
     reducers: {},
     extraReducers: builder => {
         builder
-            .addCase(fetchScores.pending, (state) => {
+            .addCase(fetchScenarios.pending, (state) => {
                 state.loading = true
                 state.error = null
             })
-            .addCase(fetchScores.fulfilled, (state, action) => {
+            .addCase(fetchScenarios.fulfilled, (state, action) => {
                 state.loading = false
                 state.scenarios = action.payload
             })
-            .addCase(fetchScores.rejected, (state, action) => {
+            .addCase(fetchScenarios.rejected, (state, action) => {
                 state.loading = false
                 state.error = action.payload
             })
-            .addCase(createAndUpdateScore.pending, (state) => {
+            .addCase(createAndUpdateScenario.pending, (state) => {
                 state.loading = true
                 state.error = null
             })
-            .addCase(createAndUpdateScore.fulfilled, (state) => {
+            .addCase(createAndUpdateScenario.fulfilled, (state) => {
                 state.loading = false
                 // state.docs = action.payload
             })
-            .addCase(createAndUpdateScore.rejected, (state, action) => {
+            .addCase(createAndUpdateScenario.rejected, (state, action) => {
                 state.loading = false
                 state.error = action.payload
             })
