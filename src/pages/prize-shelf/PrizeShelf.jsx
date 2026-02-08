@@ -11,7 +11,12 @@ import {
     Clock,
     CheckCircle,
     XCircle,
-    Sparkles
+    Sparkles,
+    Building2,
+    Info,
+    Tag,
+    Edit3,
+    Power
 } from 'lucide-react';
 
 import Layout from '../layout/Layout';
@@ -33,7 +38,7 @@ import {
     DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 
-import { deletePrize, fetchPrizes } from '@/features/prize-shelf/prizeShelfActions';
+import { createAndUpdatePrize, deletePrize, fetchPrizes } from '@/features/prize-shelf/prizeShelfActions';
 import { LoadingSpinner, PageLoader } from '@/components/common/Loading';
 import { toast } from 'react-toastify';
 import withReactContent from 'sweetalert2-react-content';
@@ -78,7 +83,7 @@ export default function PrizeShelf() {
     const { loading, prizes, error } = useSelector(state => state.prizeShelf);
 
     useEffect(() => {
-        dispatch(fetchPrizes());
+        dispatch(fetchPrizes({ "_Business": 3 }));
     }, [dispatch]);
 
 
@@ -94,76 +99,202 @@ export default function PrizeShelf() {
         return <PageLoader />;
     }
 
-    const handleDeletePrize = async (id) => {
-        const confirm = await MySwal.fire({
-            title: 'آیا از حذف این جایزه مطمئن هستید؟',
-            text: "این عمل قابل بازگشت نیست!",
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#d33',
-            cancelButtonColor: '#3085d6',
-            confirmButtonText: 'بله، حذف شود!',
-            cancelButtonText: 'لغو',
-        });
+    const handlePrizeStatus = async (prize) => {
+        const payload = {};
+        if (!prize) return;
+        const excludedFields = ['BusinessName', 'TypePrizeTitle', 'savedate', 'TypePrizeTitle', 'dateRange'];
 
-        if (!confirm.isConfirmed) return;
+        Object.keys(prize).forEach(key => {
+            const value = prize[key];
+
+            // شرط: فیلد در لیست ممنوعه نباشد و مقدارش خالی/نال نباشد
+            if (
+                !excludedFields.includes(key) &&
+                value !== null &&
+                value !== undefined &&
+                value !== ''
+            ) {
+                payload[key] = value;
+            }
+        });
+        payload.active = !payload.active
+        console.log("Clean Payload for Server:", payload);
 
         try {
-            const resultAction = await dispatch(deletePrize({ Id: id }));
+            const resultAction = await dispatch(createAndUpdatePrize(payload));
 
-            if (resultAction.type === deletePrize.fulfilled.type) {
-                toast.success('جایزه با موفقیت حذف شد');
-                dispatch(fetchPrizes());
-            } else {
-                toast.error('خطا در حذف جایزه');
+            if (createAndUpdatePrize.fulfilled.match(resultAction)) {
+                toast.success('عملیات با موفقیت انجام شد');
+                dispatch(fetchPrizes({ "_Business": 3 }));
             }
         } catch (error) {
-            toast.error(`خطا در حذف جایزه: ${error.message}`);
+            toast.error(`خطا در ویرایش وضعیت جایزه: ${error.message}`);
         }
     };
 
 
 
+
+
+
     const columns = [
         {
-            accessorKey: "id",
+            id: "rowIndex",
             header: "ردیف",
             cell: ({ row }) => (
-                <div className="font-mono font-bold text-primary">
-                    #{row.getValue("id")}
+                <div className="flex justify-center">
+                    <span className="flex h-7 w-7 items-center justify-center rounded-full bg-secondary/50 text-xs font-bold text-muted-foreground border border-border/50">
+                        {row.index + 1}
+                    </span>
                 </div>
             ),
-            size: 80,
+            size: 60,
+        },
+        {
+            accessorKey: "BusinessName",
+            header: "کسب‌وکار",
+            cell: ({ row }) => (
+                <div className="flex items-center gap-2">
+                    <div className="p-1.5 rounded-md bg-blue-50 text-blue-600">
+                        <Building2 className="h-4 w-4" />
+                    </div>
+                    <span className="font-semibold text-sm tracking-tight text-foreground/80">
+                        {row.getValue("BusinessName")}
+                    </span>
+                </div>
+            ),
+            size: 160,
         },
         {
             accessorKey: "title",
             header: ({ column }) => (
                 <Button
                     variant="ghost"
-                    className="text-right"
+                    className="p-0 hover:bg-transparent font-bold text-foreground"
                     onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
                 >
-                    <Trophy className="ml-2 h-4 w-4" />
                     عنوان جایزه
-                    <ArrowUpDown className="mr-2 h-4 w-4" />
+                    <ArrowUpDown className="mr-2 h-3 w-3 text-muted-foreground" />
                 </Button>
             ),
             cell: ({ row }) => (
                 <div className="flex items-center gap-3">
-                    <div className="h-10 w-10 rounded-lg bg-gradient-to-br from-primary/20 to-secondary/20 flex items-center justify-center">
-                        <Award className="h-5 w-5 text-primary" />
+                    <div className="relative group">
+                        <div className="absolute -inset-1 rounded-lg bg-gradient-to-r from-primary/40 to-secondary/40 blur opacity-25 group-hover:opacity-50 transition duration-300"></div>
+                        <div className="relative h-10 w-10 rounded-xl bg-background border shadow-sm flex items-center justify-center">
+                            <Trophy className="h-5 w-5 text-primary" />
+                        </div>
                     </div>
-                    <div>
-                        <p className="font-semibold text-foreground">{row.getValue("title")}</p>
+                    <div className="flex flex-col">
+                        <span className="font-bold text-sm text-foreground leading-none mb-1">
+                            {row.getValue("title")}
+                        </span>
                         {row.original.describe && (
-                            <p className="text-xs text-muted-foreground line-clamp-1">
-                                {row.original.describe.replace(/<[^>]*>/g, '')}
-                            </p>
+                            <div className="flex items-center gap-1 text-[11px] text-muted-foreground">
+                                <Info className="h-3 w-3" />
+                                <span className="line-clamp-1 italic">
+                                    {row.original.describe.replace(/<[^>]*>/g, "")}
+                                </span>
+                            </div>
                         )}
                     </div>
                 </div>
             ),
-            size: 250,
+            size: 220,
+        },
+        {
+            accessorKey: "TypePrizeTitle",
+            header: "نوع",
+            cell: ({ row }) => (
+                <Badge variant="secondary" className="bg-blue-50 text-blue-600 border-blue-100 hover:bg-blue-100">
+                    <Tag className="h-3 w-3 ml-1" />
+                    {row.original.TypePrizeTitle || "نامشخص"}
+                </Badge>
+            ),
+        },
+        {
+            accessorKey: "minusScore",
+            header: "امتیاز",
+            cell: ({ row }) => (
+                <div className="inline-flex items-center gap-1.5 px-2 py-1 rounded-lg bg-amber-50 border border-amber-100">
+                    <Sparkles className="h-3.5 w-3.5 text-amber-500 fill-amber-500" />
+                    <span className="font-black text-amber-700 tabular-nums">
+                        {row.getValue("minusScore") ?? 0}
+                    </span>
+                </div>
+            ),
+            size: 100,
+        },
+        {
+            id: "purchaseLimits", // <--- ستون جدید اینجاست
+            header: "محدودیت خرید",
+            cell: ({ row }) => {
+                const min = row.original.minBuy;
+                const max = row.original.maxBuy;
+                return (
+                    <div className="flex flex-col gap-1">
+                        <div className="flex items-center gap-2">
+                            <div className="h-1.5 w-1.5 rounded-full bg-sky-400" />
+                            <span className="text-[10px] text-muted-foreground w-8">حداقل:</span>
+                            <span className="text-[11px] font-bold tabular-nums">
+                                {min ? `${min.toLocaleString()}` : "—"}
+                            </span>
+                        </div>
+                        <div className="flex items-center gap-2 border-t border-border/40 pt-1">
+                            <div className="h-1.5 w-1.5 rounded-full bg-rose-400" />
+                            <span className="text-[10px] text-muted-foreground w-8">حداکثر:</span>
+                            <span className="text-[11px] font-bold tabular-nums">
+                                {max ? `${max.toLocaleString()}` : "—"}
+                            </span>
+                        </div>
+                    </div>
+                );
+            },
+            size: 140,
+        },
+        {
+            id: "discount",
+            header: "ارزش جایزه",
+            cell: ({ row }) => {
+                const percent = row.original.Persent;
+                const amount = row.original.Amount;
+                return (
+                    <div className="font-bold text-emerald-600 tracking-tight">
+                        {percent ? (
+                            <span className="text-lg">%{percent}</span>
+                        ) : amount ? (
+                            <div className="flex flex-col items-start leading-none">
+                                <span className="text-sm">{amount.toLocaleString()}</span>
+                                <span className="text-[10px] opacity-70">تومان</span>
+                            </div>
+                        ) : (
+                            <span className="text-muted-foreground opacity-30">—</span>
+                        )}
+                    </div>
+                );
+            },
+            size: 110,
+        },
+        {
+            id: "dateRange",
+            header: "اعتبار",
+            cell: ({ row }) => (
+                <TooltipProvider>
+                    <Tooltip>
+                        <TooltipTrigger asChild>
+                            <div className="flex items-center gap-2 cursor-help group">
+                                <div className="h-2 w-2 rounded-full bg-primary/40 group-hover:bg-primary transition-colors" />
+                                <div className="flex flex-col text-[12px] font-medium text-muted-foreground leading-tight">
+                                    <span>{new Date(row.original.sDate).toLocaleDateString("fa-IR")}</span>
+                                    <span className="border-t border-border/40 mt-1">{new Date(row.original.eDate).toLocaleDateString("fa-IR")}</span>
+                                </div>
+                            </div>
+                        </TooltipTrigger>
+                        <TooltipContent side="top">بازه زمانی فعال بودن جایزه</TooltipContent>
+                    </Tooltip>
+                </TooltipProvider>
+            ),
+            size: 130,
         },
         {
             accessorKey: "active",
@@ -172,144 +303,42 @@ export default function PrizeShelf() {
                 const isActive = row.getValue("active");
                 return (
                     <Badge
-                        variant={isActive ? "default" : "destructive"}
-                        className="gap-1"
+                        className={`rounded-full px-3 py-0.5 border-none ${isActive
+                            ? "bg-emerald-100 text-emerald-700"
+                            : "bg-rose-100 text-rose-700"
+                            }`}
                     >
-                        {isActive ? (
-                            <>
-                                <CheckCircle className="h-3 w-3" />
-                                فعال
-                            </>
-                        ) : (
-                            <>
-                                <XCircle className="h-3 w-3" />
-                                غیرفعال
-                            </>
-                        )}
+                        <span className={`ml-1.5 h-1.5 w-1.5 rounded-full animate-pulse ${isActive ? "bg-emerald-500" : "bg-rose-500"}`} />
+                        {isActive ? "فعال" : "غیرفعال"}
                     </Badge>
                 );
             },
             size: 100,
         },
         {
-            accessorKey: "minusScore",
-            header: "امتیاز مورد نیاز",
+            id: "actions",
+            header: "عملیات",
             cell: ({ row }) => (
-                <div className="flex items-center  gap-2">
-                    <Sparkles className="h-4 w-4 text-amber-500" />
-                    <span className="font-bold text-lg">{row.getValue("minusScore") || 0}</span>
-                    <span className="text-sm text-muted-foreground">امتیاز</span>
+                <div className="flex items-center gap-2">
+                    <Button size="icon" variant="ghost" className="h-8 w-8 rounded-full hover:bg-primary/10 hover:text-primary" asChild>
+                        <Link to={`edit/${row.original.id}`}>
+                            <Edit3 className="h-4 w-4" />
+                        </Link>
+                    </Button>
+                    <Button
+                        size="icon"
+                        variant="ghost"
+                        className={`h-8 w-8 rounded-full ${row.original.active ? "hover:text-rose-600" : "hover:text-emerald-600"}`}
+                        onClick={() => handlePrizeStatus(row.original)}
+                    >
+                        <Power className="h-4 w-4" />
+                    </Button>
                 </div>
-            ),
-            size: 120,
-        },
-        {
-            accessorKey: "dateRange",
-            header: "بازه زمانی",
-            cell: ({ row }) => (
-                <TooltipProvider>
-                    <Tooltip>
-                        <TooltipTrigger asChild>
-                            <div className="flex items-center gap-2 text-sm">
-                                <Calendar className="h-4 w-4 text-muted-foreground" />
-                                <span className="truncate">
-                                    {new Date(row.original.sDate).toLocaleDateString('fa-IR')}
-                                </span>
-                                <span>تا</span>
-                                <span className="truncate">
-                                    {new Date(row.original.eDate).toLocaleDateString('fa-IR')}
-                                </span>
-                            </div>
-                        </TooltipTrigger>
-                        <TooltipContent>
-                            <p>تاریخ شروع: {new Date(row.original.sDate).toLocaleDateString('fa-IR')}</p>
-                            <p>تاریخ پایان: {new Date(row.original.eDate).toLocaleDateString('fa-IR')}</p>
-                        </TooltipContent>
-                    </Tooltip>
-                </TooltipProvider>
-            ),
-            size: 200,
-        },
-        {
-            accessorKey: "Persent",
-            header: "درصد تخفیف",
-            cell: ({ row }) => (
-                <Badge variant="outline" className="bg-secondary/20">
-                    {row.getValue("Persent") || 0}%
-                </Badge>
             ),
             size: 100,
         },
-        {
-            id: "stats",
-            header: "آمار",
-            cell: ({ row }) => (
-                <div className="grid grid-cols-2 gap-2 text-xs">
-                    <div className="space-y-1">
-                        <p className="text-muted-foreground">حداقل خرید</p>
-                        <p className="font-semibold">{row.original.minBuy || '-'}</p>
-                    </div>
-                    <div className="space-y-1">
-                        <p className="text-muted-foreground">حداکثر خرید</p>
-                        <p className="font-semibold">{row.original.maxBuy || '-'}</p>
-                    </div>
-                </div>
-            ),
-            size: 150,
-        },
-        {
-            id: "actions",
-            enableHiding: false,
-            header: "عملیات",
-            cell: ({ row }) => {
-                const prize = row.original;
-                return (
-                    <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                            <Button variant="ghost" className="h-8 w-8 p-0 hover:bg-primary/10">
-                                <span className="sr-only">بازکردن منو</span>
-                                <MoreHorizontalIcon className="h-4 w-4" />
-                            </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="start" className="w-48">
-                            <DropdownMenuLabel className="flex items-center gap-2">
-                                <Trophy className="h-4 w-4" />
-                                عملیات‌ها
-                            </DropdownMenuLabel>
-                            <DropdownMenuSeparator />
-                            <DropdownMenuItem asChild>
-                                <Link to={`edit/${prize.id}`} className="cursor-pointer">
-                                    <svg className="ml-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                                    </svg>
-                                    ویرایش جایزه
-                                </Link>
-                            </DropdownMenuItem>
-                            <DropdownMenuItem
-                                onClick={() => navigator.clipboard.writeText(prize.title)}
-                                className="cursor-pointer"
-                            >
-                                <svg className="ml-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
-                                </svg>
-                                کپی عنوان
-                            </DropdownMenuItem>
-                            <DropdownMenuSeparator />
-                            <DropdownMenuItem className="cursor-pointer text-destructive focus:text-destructive"
-                                onClick={() => handleDeletePrize(prize.id)}
-                            >
-                                <svg className="ml-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                                </svg>
-                                حذف جایزه
-                            </DropdownMenuItem>
-                        </DropdownMenuContent>
-                    </DropdownMenu>
-                );
-            },
-            size: 80,
-        },
     ];
+
 
     return (
         <Layout>
@@ -376,17 +405,9 @@ export default function PrizeShelf() {
                             filters={[
                                 {
                                     value: "title",
-                                    placeholder: "جستجو بر اساس عنوان..."
-                                },
-                                {
-                                    value: "active",
-                                    placeholder: "فیلتر بر اساس وضعیت",
-                                    type: "select",
-                                    options: [
-                                        { label: "فعال", value: "true" },
-                                        { label: "غیرفعال", value: "false" }
-                                    ]
+                                    placeholder: "عنوان"
                                 }
+
                             ]}
                             initialState={{
                                 sorting: [{ id: "id", desc: true }]

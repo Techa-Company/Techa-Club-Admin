@@ -27,3 +27,16 @@ export const createAndUpdateCoupon = createAsyncThunk(
         }
     }
 )
+
+export const fetchCouponTypes = createAsyncThunk(
+    'prize-shelf/fetchCouponTypes',
+    async (parameters, thunkAPI) => {
+        try {
+            const res = await SP_fetch('Report_typeCoupon', parameters)
+            console.log(res.Data)
+            return res.Data
+        } catch (err) {
+            return thunkAPI.rejectWithValue(err.message)
+        }
+    }
+)

@@ -1,10 +1,11 @@
 // src/features/coupon/couponSlice.js
 
 import { createSlice } from '@reduxjs/toolkit'
-import { createAndUpdateCoupon, fetchCoupons } from './couponActions'
+import { createAndUpdateCoupon, fetchCoupons, fetchCouponTypes } from './couponActions'
 
 const initialState = {
     coupons: [],
+    couponTypes: [],
     loading: false,
     error: null,
 }
@@ -37,6 +38,18 @@ const couponSlice = createSlice({
                 // state.docs = action.payload
             })
             .addCase(createAndUpdateCoupon.rejected, (state, action) => {
+                state.loading = false
+                state.error = action.payload
+            })
+            .addCase(fetchCouponTypes.pending, (state) => {
+                state.loading = true
+                state.error = null
+            })
+            .addCase(fetchCouponTypes.fulfilled, (state, action) => {
+                state.loading = false
+                state.couponTypes = action.payload
+            })
+            .addCase(fetchCouponTypes.rejected, (state, action) => {
                 state.loading = false
                 state.error = action.payload
             })

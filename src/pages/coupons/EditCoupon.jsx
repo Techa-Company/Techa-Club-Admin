@@ -2,9 +2,9 @@ import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import {
-    Trophy, Save, ArrowRight, Sparkles, Calendar,
+    Ticket, Save, ArrowRight, Calendar,
     Target, PenLine, Percent, Banknote, Power,
-    FileText, Gift
+    FileText
 } from 'lucide-react';
 
 import DatePicker from "react-multi-date-picker";
@@ -24,10 +24,10 @@ import { LoadingSpinner } from '@/components/common/Loading';
 import { toast } from 'react-toastify';
 
 import {
-    createAndUpdatePrize,
-    fetchPrizes,
-    fetchPrizeTypes
-} from '@/features/prize-shelf/prizeShelfActions';
+    createAndUpdateCoupon,
+    fetchCoupons,
+    fetchCouponTypes
+} from '@/features/coupon/couponActions';
 
 import {
     Select,
@@ -37,20 +37,19 @@ import {
     SelectValue
 } from '@/components/ui/select';
 
-export default function EditPrize() {
+export default function EditCoupon() {
     const { id } = useParams();
     const isNew = id === 'new';
     const navigate = useNavigate();
     const dispatch = useDispatch();
 
-    const { prizes, prizeTypes } = useSelector(state => state.prizeShelf);
+    const { coupons, couponTypes } = useSelector(state => state.coupon);
     const [isSubmitting, setIsSubmitting] = useState(false);
 
     const [formData, setFormData] = useState({
         id: isNew ? 0 : Number(id),
         title: '',
         describe: '',
-        minusScore: '',
         Persent: '',
         Amount: '',
         minBuy: '',
@@ -58,39 +57,39 @@ export default function EditPrize() {
         sDate: null,
         eDate: null,
         active: true,
-        _typePrize: null,
+        _typeCoupon: null,
     });
 
     useEffect(() => {
-        dispatch(fetchPrizeTypes());
+        dispatch(fetchCouponTypes());
     }, [dispatch]);
 
     useEffect(() => {
-        if (!isNew && prizes.length > 0) {
-            const prize = prizes.find(p => p.id === Number(id));
-            if (!prize) return;
+        if (!isNew && coupons.length > 0) {
+            const coupon = coupons.find(c => c.id === Number(id));
+            if (!coupon) return;
 
             setFormData({
-                ...prize,
-                sDate: prize.sDate
+                ...coupon,
+                sDate: coupon.sDate
                     ? new DateObject({
-                        date: new Date(prize.sDate),
+                        date: new Date(coupon.sDate),
                         calendar: persian,
                         locale: persian_fa,
                     })
                     : null,
-                eDate: prize.eDate
+                eDate: coupon.eDate
                     ? new DateObject({
-                        date: new Date(prize.eDate),
+                        date: new Date(coupon.eDate),
                         calendar: persian,
                         locale: persian_fa,
                     })
                     : null,
             });
-        } else if (!isNew && prizes.length === 0) {
-            dispatch(fetchPrizes({ _Business: 3 }));
+        } else if (!isNew && coupons.length === 0) {
+            dispatch(fetchCoupons({ _Business: 3 }));
         }
-    }, [id, prizes, isNew, dispatch]);
+    }, [id, coupons, isNew, dispatch]);
 
     // انحصار مبلغ و درصد
     const handleDiscountChange = (field, value) => {
@@ -105,7 +104,7 @@ export default function EditPrize() {
         e.preventDefault();
 
         if (!formData.title)
-            return toast.error("عنوان جایزه الزامی است");
+            return toast.error("عنوان کد تخفیف الزامی است");
 
         setIsSubmitting(true);
 
@@ -117,18 +116,18 @@ export default function EditPrize() {
                 eDate: formData.eDate?.toDate?.().toISOString(),
             };
 
-            const excludedFields = ['BusinessName', 'TypePrizeTitle', 'savedate', 'TypePrizeTitle'];
+            const excludedFields = ['BusinessName', 'savedate', 'CouponTitle', 'icon'];
             excludedFields.forEach(f => delete payload[f]);
             if (!payload.Amount) {
                 delete payload.Amount;
             }
 
-            const result = await dispatch(createAndUpdatePrize(payload));
+            const result = await dispatch(createAndUpdateCoupon(payload));
 
-            if (createAndUpdatePrize.fulfilled.match(result)) {
-                toast.success(isNew ? 'جایزه ساخته شد' : 'ویرایش ذخیره شد');
-                dispatch(fetchPrizes({ _Business: 3 }));
-                navigate('/prize-shelf');
+            if (createAndUpdateCoupon.fulfilled.match(result)) {
+                toast.success(isNew ? 'کد تخفیف ساخته شد' : 'ویرایش ذخیره شد');
+                dispatch(fetchCoupons({ _Business: 3 }));
+                navigate('/coupons');
             }
         } catch {
             toast.error('خطا در ثبت اطلاعات');
@@ -159,16 +158,16 @@ export default function EditPrize() {
                         </Button>
                         <div className="flex flex-col">
                             <h1 className="text-xl font-black text-slate-800 flex items-center gap-2">
-                                <Trophy className="h-6 w-6 text-primary animate-pulse" />
-                                {isNew ? 'تعریف جایزه جدید' : 'ویرایش جایزه'}
+                                <Ticket className="h-6 w-6 text-primary" />
+                                {isNew ? 'تعریف کد تخفیف جدید' : 'ویرایش کد تخفیف'}
                             </h1>
-                            <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Prize Management System</span>
+                            <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Coupon Management System</span>
                         </div>
                     </div>
 
                     <Button onClick={handleSubmit} disabled={isSubmitting} className="gap-2 px-10 rounded-2xl shadow-xl shadow-primary/20 bg-primary hover:bg-primary/90 transition-all active:scale-95">
                         {isSubmitting ? <LoadingSpinner size="sm" /> : <Save className="h-4 w-4" />}
-                        {isNew ? 'انتشار جایزه' : 'بروزرسانی'}
+                        {isNew ? 'انتشار کوپن' : 'بروزرسانی'}
                     </Button>
                 </div>
 
@@ -177,39 +176,39 @@ export default function EditPrize() {
                     {/* Main Content */}
                     <div className="lg:col-span-2 space-y-8">
                         <Card className="border-none shadow-2xl shadow-slate-200/50 rounded-[32px] overflow-hidden bg-white">
-                            <div className="h-3 bg-gradient-to-r from-primary via-amber-400 to-yellow-400" />
+                            <div className="h-3 bg-gradient-to-r from-primary via-blue-400 to-indigo-500" />
                             <CardContent className="p-10 space-y-8">
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
 
                                     {/* Title Input */}
                                     <div className="space-y-3">
                                         <Label className="text-sm font-black flex items-center gap-2 text-slate-700 mr-1">
-                                            <PenLine className="h-4 w-4 text-primary" /> عنوان جایزه
+                                            <PenLine className="h-4 w-4 text-primary" /> عنوان و نام تجاری کد
                                         </Label>
                                         <Input
                                             value={formData.title}
                                             onChange={(e) => setFormData({ ...formData, title: e.target.value })}
                                             className="h-14 border-slate-100 bg-slate-50/50 focus:bg-white focus:ring-4 focus:ring-primary/5 transition-all rounded-2xl text-lg font-bold"
-                                            placeholder="مثلاً: جایزه ویژه اعضای جدید"
+                                            placeholder="مثلاً: تخفیف ویژه یلدا"
                                         />
                                     </div>
                                     <div className="space-y-3">
                                         <Label className="text-sm font-black text-slate-700 mr-1">
-                                            نوع جایزه
+                                            نوع کوپن
                                         </Label>
 
                                         <Select
-                                            value={formData._typePrize?.toString()}
+                                            value={formData._typeCoupon?.toString()}
                                             onValueChange={(val) =>
-                                                setFormData({ ...formData, _typePrize: Number(val) })
+                                                setFormData({ ...formData, _typeCoupon: Number(val) })
                                             }
                                         >
                                             <SelectTrigger className="h-14 rounded-2xl bg-slate-50">
-                                                <SelectValue placeholder="انتخاب نوع جایزه" />
+                                                <SelectValue placeholder="انتخاب نوع کوپن" />
                                             </SelectTrigger>
 
                                             <SelectContent>
-                                                {prizeTypes?.map(type => (
+                                                {couponTypes?.map(type => (
                                                     <SelectItem key={type.id} value={type.id.toString()}>
                                                         {type.title}
                                                     </SelectItem>
@@ -218,28 +217,11 @@ export default function EditPrize() {
                                         </Select>
                                     </div>
                                 </div>
-
                                 {/* Value Inputs */}
-                                <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                                    <div className="relative group">
-                                        <Label className="text-sm font-black text-amber-600 mb-3 flex items-center gap-1 mr-1">
-                                            <Sparkles className="h-4 w-4" /> امتیاز لازم
-                                        </Label>
-                                        <div className="relative">
-                                            <Input
-                                                type="number"
-                                                value={formData.minusScore}
-                                                onChange={(e) => setFormData({ ...formData, minusScore: e.target.value })}
-                                                className="h-14 font-mono text-center text-xl rounded-2xl transition-all border-2 bg-amber-50/30 border-amber-100 focus:border-amber-500 focus:ring-amber-100"
-                                                placeholder="0"
-                                            />
-                                            <span className="absolute left-4 top-1/2 -translate-y-1/2 text-amber-500 font-black">امتیاز</span>
-                                        </div>
-                                    </div>
-
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                                     <div className="relative group">
                                         <Label className="text-sm font-black text-emerald-600 mb-3 flex items-center gap-1 mr-1">
-                                            <Percent className="h-4 w-4" /> درصد تخفیف
+                                            <Percent className="h-4 w-4" /> میزان درصد تخفیف
                                         </Label>
                                         <div className="relative">
                                             <Input
@@ -256,7 +238,7 @@ export default function EditPrize() {
 
                                     <div className="relative group">
                                         <Label className="text-sm font-black text-blue-600 mb-3 flex items-center gap-1 mr-1">
-                                            <Banknote className="h-4 w-4" /> مبلغ ثابت
+                                            <Banknote className="h-4 w-4" /> مبلغ تخفیف (تومان)
                                         </Label>
                                         <div className="relative">
                                             <Input
@@ -281,7 +263,7 @@ export default function EditPrize() {
                                         value={formData.describe}
                                         onChange={(e) => setFormData({ ...formData, describe: e.target.value })}
                                         className="min-h-[160px] border-slate-100 bg-slate-50/50 rounded-[24px] focus:bg-white p-5 resize-none transition-all"
-                                        placeholder="توضیحات مربوط به نحوه استفاده از این جایزه را اینجا بنویسید..."
+                                        placeholder="توضیحات مربوط به نحوه استفاده از این کد تخفیف را اینجا بنویسید..."
                                     />
                                 </div>
                             </CardContent>
@@ -377,3 +359,6 @@ export default function EditPrize() {
         </Layout>
     );
 }
+
+
+

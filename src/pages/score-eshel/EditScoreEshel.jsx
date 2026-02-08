@@ -61,15 +61,12 @@ export default function EditScoreEshel() {
         }
     });
 
-    // اگر در حالت ویرایش هستیم، اطلاعات را می‌گیریم
     useEffect(() => {
         if (isEditMode) {
-            // اگر دیتا در ریداکس موجود نیست، فچ کن (یا از لیست پیدا کن)
-            dispatch(fetchScores());
+            dispatch(fetchScores({ "_Business": 3 }));
         }
     }, [dispatch, id, isEditMode]);
 
-    // پر کردن فرم پس از دریافت اطلاعات
     useEffect(() => {
         if (isEditMode && scores) {
             reset({
@@ -87,7 +84,7 @@ export default function EditScoreEshel() {
         try {
             // تبدیل مقادیر استرینگ به عدد (چون اینپوت نامبر استرینگ برمی‌گرداند)
             const payload = {
-                // _Business: isEditMode ? Number(id) : 0, // برای ایجاد معمولا 0 یا null می‌فرستند
+                id: id,
                 _Business: 3, // برای ایجاد معمولا 0 یا null می‌فرستند
                 ScoreBuy: Number(data.ScoreBuy),
                 ScoreBuyOne: Number(data.ScoreBuyOne),
@@ -97,7 +94,6 @@ export default function EditScoreEshel() {
                 ScoreEitaa: Number(data.ScoreEitaa),
                 // _Business معمولا سمت بکند از توکن خوانده می‌شود، اما اگر لازم است اینجا اضافه کنید
             };
-
             const resultAction = await dispatch(createAndUpdateScore(payload));
 
             if (createAndUpdateScore.fulfilled.match(resultAction)) {

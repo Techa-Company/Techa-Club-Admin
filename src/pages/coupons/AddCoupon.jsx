@@ -1,17 +1,17 @@
 import React, { useEffect, useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import {
-    Trophy, Save, ArrowRight, Sparkles, Calendar,
+    Ticket, Save, ArrowRight, Sparkles, Calendar,
     Target, PenLine, Percent, Banknote, Power,
-    FileText, Gift
+    FileText, Zap
 } from 'lucide-react';
 
+// پکیج تاریخ شمسی
 import DatePicker from "react-multi-date-picker";
 import persian from "react-date-object/calendars/persian";
 import persian_fa from "react-date-object/locales/persian_fa";
 import opacity from "react-element-popper/animations/opacity";
-import DateObject from 'react-date-object';
 
 import Layout from '../layout/Layout';
 import { Button } from '@/components/button';
@@ -22,77 +22,38 @@ import { Switch } from '@/components/ui/switch';
 import { Textarea } from '@/components/ui/textarea';
 import { LoadingSpinner } from '@/components/common/Loading';
 import { toast } from 'react-toastify';
+import { createAndUpdateCoupon, fetchCoupons, fetchCouponTypes } from '@/features/coupon/couponActions';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
-import {
-    createAndUpdatePrize,
-    fetchPrizes,
-    fetchPrizeTypes
-} from '@/features/prize-shelf/prizeShelfActions';
+// اکشن مربوط به کوپن
 
-import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue
-} from '@/components/ui/select';
-
-export default function EditPrize() {
-    const { id } = useParams();
-    const isNew = id === 'new';
+export default function AddCoupon() {
     const navigate = useNavigate();
     const dispatch = useDispatch();
-
-    const { prizes, prizeTypes } = useSelector(state => state.prizeShelf);
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const { couponTypes } = useSelector(state => state.coupon);
 
+    // مقادیر اولیه برای کوپن جدید
     const [formData, setFormData] = useState({
-        id: isNew ? 0 : Number(id),
+        id: 0, // آیتم جدید
         title: '',
         describe: '',
-        minusScore: '',
         Persent: '',
         Amount: '',
         minBuy: '',
         maxBuy: '',
-        sDate: null,
-        eDate: null,
+        sDate: new Date().toISOString(),
+        eDate: new Date().toISOString(),
         active: true,
-        _typePrize: null,
+        _typeCoupon: null
     });
 
     useEffect(() => {
-        dispatch(fetchPrizeTypes());
+        dispatch(fetchCouponTypes());
     }, [dispatch]);
 
-    useEffect(() => {
-        if (!isNew && prizes.length > 0) {
-            const prize = prizes.find(p => p.id === Number(id));
-            if (!prize) return;
 
-            setFormData({
-                ...prize,
-                sDate: prize.sDate
-                    ? new DateObject({
-                        date: new Date(prize.sDate),
-                        calendar: persian,
-                        locale: persian_fa,
-                    })
-                    : null,
-                eDate: prize.eDate
-                    ? new DateObject({
-                        date: new Date(prize.eDate),
-                        calendar: persian,
-                        locale: persian_fa,
-                    })
-                    : null,
-            });
-        } else if (!isNew && prizes.length === 0) {
-            dispatch(fetchPrizes({ _Business: 3 }));
-        }
-    }, [id, prizes, isNew, dispatch]);
-
-    // انحصار مبلغ و درصد
+    // هندل کردن تغییر درصد یا مبلغ (فقط یکی می‌تواند پر باشد)
     const handleDiscountChange = (field, value) => {
         if (field === 'Persent') {
             setFormData(prev => ({ ...prev, Persent: value, Amount: '' }));
@@ -103,35 +64,32 @@ export default function EditPrize() {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-
-        if (!formData.title)
-            return toast.error("عنوان جایزه الزامی است");
+        if (!formData.title) return toast.error("لطفاً عنوان کد تخفیف را وارد کنید");
 
         setIsSubmitting(true);
-
         try {
             const payload = {
                 _Business: 3,
-                ...formData,
-                sDate: formData.sDate?.toDate?.().toISOString(),
-                eDate: formData.eDate?.toDate?.().toISOString(),
             };
 
-            const excludedFields = ['BusinessName', 'TypePrizeTitle', 'savedate', 'TypePrizeTitle'];
-            excludedFields.forEach(f => delete payload[f]);
-            if (!payload.Amount) {
-                delete payload.Amount;
-            }
+            Object.keys(formData).forEach(key => {
+                const value = formData[key];
+                if (value !== null && value !== undefined && value !== '') {
+                    payload[key] = value;
+                }
+            });
 
-            const result = await dispatch(createAndUpdatePrize(payload));
+            console.log("Payload to Server:", payload);
 
-            if (createAndUpdatePrize.fulfilled.match(result)) {
-                toast.success(isNew ? 'جایزه ساخته شد' : 'ویرایش ذخیره شد');
-                dispatch(fetchPrizes({ _Business: 3 }));
-                navigate('/prize-shelf');
+            const resultAction = await dispatch(createAndUpdateCoupon(payload));
+
+            if (createAndUpdateCoupon.fulfilled.match(resultAction)) {
+                toast.success('کد تخفیف جدید با موفقیت ثبت و منتشر شد');
+                dispatch(fetchCoupons({ "_Business": 3 })); // بروزرسانی لیست
+                navigate('/coupons');
             }
-        } catch {
-            toast.error('خطا در ثبت اطلاعات');
+        } catch (error) {
+            toast.error('خطایی در ثبت کد تخفیف رخ داد');
         } finally {
             setIsSubmitting(false);
         }
@@ -144,7 +102,7 @@ export default function EditPrize() {
         padding: "0 12px",
         fontSize: "14px",
         border: "1px solid #e2e8f0",
-        backgroundColor: "#f8fafc",
+        backgroundColor: "#f8fafc"
     };
 
     return (
@@ -159,57 +117,56 @@ export default function EditPrize() {
                         </Button>
                         <div className="flex flex-col">
                             <h1 className="text-xl font-black text-slate-800 flex items-center gap-2">
-                                <Trophy className="h-6 w-6 text-primary animate-pulse" />
-                                {isNew ? 'تعریف جایزه جدید' : 'ویرایش جایزه'}
+                                <Zap className="h-6 w-6 text-primary animate-pulse" />
+                                تعریف کوپن جدید
                             </h1>
-                            <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Prize Management System</span>
+                            <span className="text-[10px] text-slate-400 font-bold tracking-widest uppercase mr-8">Create New Discount Asset</span>
                         </div>
                     </div>
 
-                    <Button onClick={handleSubmit} disabled={isSubmitting} className="gap-2 px-10 rounded-2xl shadow-xl shadow-primary/20 bg-primary hover:bg-primary/90 transition-all active:scale-95">
+                    <Button onClick={handleSubmit} disabled={isSubmitting} className="gap-2 px-10 rounded-2xl shadow-xl shadow-primary/20 bg-primary hover:scale-105 transition-all active:scale-95 font-bold">
                         {isSubmitting ? <LoadingSpinner size="sm" /> : <Save className="h-4 w-4" />}
-                        {isNew ? 'انتشار جایزه' : 'بروزرسانی'}
+                        ثبت و انتشار
                     </Button>
                 </div>
 
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
 
-                    {/* Main Content */}
+                    {/* بخش اصلی: محتوا */}
                     <div className="lg:col-span-2 space-y-8">
                         <Card className="border-none shadow-2xl shadow-slate-200/50 rounded-[32px] overflow-hidden bg-white">
-                            <div className="h-3 bg-gradient-to-r from-primary via-amber-400 to-yellow-400" />
+                            <div className="h-3 bg-gradient-to-l from-primary via-indigo-400 to-cyan-400" />
                             <CardContent className="p-10 space-y-8">
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
 
-                                    {/* Title Input */}
-                                    <div className="space-y-3">
+                                    <div className="space-y-3 text-right">
                                         <Label className="text-sm font-black flex items-center gap-2 text-slate-700 mr-1">
-                                            <PenLine className="h-4 w-4 text-primary" /> عنوان جایزه
+                                            <PenLine className="h-4 w-4 text-primary" /> عنوان کد تخفیف
                                         </Label>
                                         <Input
                                             value={formData.title}
                                             onChange={(e) => setFormData({ ...formData, title: e.target.value })}
                                             className="h-14 border-slate-100 bg-slate-50/50 focus:bg-white focus:ring-4 focus:ring-primary/5 transition-all rounded-2xl text-lg font-bold"
-                                            placeholder="مثلاً: جایزه ویژه اعضای جدید"
+                                            placeholder="مثلاً: جشنواره تابستانه ۱۴۰۳"
                                         />
                                     </div>
                                     <div className="space-y-3">
                                         <Label className="text-sm font-black text-slate-700 mr-1">
-                                            نوع جایزه
+                                            نوع کوپن
                                         </Label>
 
                                         <Select
-                                            value={formData._typePrize?.toString()}
+                                            value={formData._typeCoupon?.toString()}
                                             onValueChange={(val) =>
-                                                setFormData({ ...formData, _typePrize: Number(val) })
+                                                setFormData({ ...formData, _typeCoupon: Number(val) })
                                             }
                                         >
                                             <SelectTrigger className="h-14 rounded-2xl bg-slate-50">
-                                                <SelectValue placeholder="انتخاب نوع جایزه" />
+                                                <SelectValue placeholder="انتخاب نوع کوپن" />
                                             </SelectTrigger>
 
                                             <SelectContent>
-                                                {prizeTypes?.map(type => (
+                                                {couponTypes?.map(type => (
                                                     <SelectItem key={type.id} value={type.id.toString()}>
                                                         {type.title}
                                                     </SelectItem>
@@ -218,28 +175,10 @@ export default function EditPrize() {
                                         </Select>
                                     </div>
                                 </div>
-
-                                {/* Value Inputs */}
-                                <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                                    <div className="relative group">
-                                        <Label className="text-sm font-black text-amber-600 mb-3 flex items-center gap-1 mr-1">
-                                            <Sparkles className="h-4 w-4" /> امتیاز لازم
-                                        </Label>
-                                        <div className="relative">
-                                            <Input
-                                                type="number"
-                                                value={formData.minusScore}
-                                                onChange={(e) => setFormData({ ...formData, minusScore: e.target.value })}
-                                                className="h-14 font-mono text-center text-xl rounded-2xl transition-all border-2 bg-amber-50/30 border-amber-100 focus:border-amber-500 focus:ring-amber-100"
-                                                placeholder="0"
-                                            />
-                                            <span className="absolute left-4 top-1/2 -translate-y-1/2 text-amber-500 font-black">امتیاز</span>
-                                        </div>
-                                    </div>
-
-                                    <div className="relative group">
-                                        <Label className="text-sm font-black text-emerald-600 mb-3 flex items-center gap-1 mr-1">
-                                            <Percent className="h-4 w-4" /> درصد تخفیف
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                                    <div className="space-y-3">
+                                        <Label className="text-sm font-black text-emerald-600 flex items-center gap-1 mr-1">
+                                            <Percent className="h-4 w-4" /> درصد تخفیف (%)
                                         </Label>
                                         <div className="relative">
                                             <Input
@@ -247,16 +186,16 @@ export default function EditPrize() {
                                                 disabled={!!formData.Amount}
                                                 value={formData.Persent}
                                                 onChange={(e) => handleDiscountChange('Persent', e.target.value)}
-                                                className={`h-14 font-mono text-center text-xl rounded-2xl transition-all border-2 ${formData.Amount ? 'bg-slate-50 opacity-30 grayscale' : 'bg-emerald-50/30 border-emerald-100 focus:border-emerald-500 focus:ring-emerald-100'}`}
+                                                className={`h-14 font-mono text-center text-xl rounded-2xl border-2 transition-all ${formData.Amount ? 'bg-slate-50 opacity-30 select-none' : 'bg-emerald-50/30 border-emerald-100 focus:border-emerald-500'}`}
                                                 placeholder="0"
                                             />
                                             <span className="absolute left-4 top-1/2 -translate-y-1/2 text-emerald-500 font-black">%</span>
                                         </div>
                                     </div>
 
-                                    <div className="relative group">
-                                        <Label className="text-sm font-black text-blue-600 mb-3 flex items-center gap-1 mr-1">
-                                            <Banknote className="h-4 w-4" /> مبلغ ثابت
+                                    <div className="space-y-3">
+                                        <Label className="text-sm font-black text-blue-600 flex items-center gap-1 mr-1">
+                                            <Banknote className="h-4 w-4" /> مبلغ ثابت (تومان)
                                         </Label>
                                         <div className="relative">
                                             <Input
@@ -264,7 +203,7 @@ export default function EditPrize() {
                                                 disabled={!!formData.Persent}
                                                 value={formData.Amount}
                                                 onChange={(e) => handleDiscountChange('Amount', e.target.value)}
-                                                className={`h-14 font-mono text-center text-xl rounded-2xl transition-all border-2 ${formData.Persent ? 'bg-slate-50 opacity-30 grayscale' : 'bg-blue-50/30 border-blue-100 focus:border-blue-500 focus:ring-blue-100'}`}
+                                                className={`h-14 font-mono text-center text-xl rounded-2xl border-2 transition-all ${formData.Persent ? 'bg-slate-50 opacity-30 select-none' : 'bg-blue-50/30 border-blue-100 focus:border-blue-500'}`}
                                                 placeholder="0"
                                             />
                                             <span className="absolute left-4 top-1/2 -translate-y-1/2 text-blue-400 text-xs font-bold">Toman</span>
@@ -272,100 +211,91 @@ export default function EditPrize() {
                                     </div>
                                 </div>
 
-                                {/* Description */}
-                                <div className="space-y-3">
+                                <div className="space-y-3 text-right">
                                     <Label className="text-sm font-black flex items-center gap-2 text-slate-700 mr-1">
-                                        <FileText className="h-4 w-4 text-slate-400" /> توضیحات و شرایط استفاده
+                                        <FileText className="h-4 w-4 text-slate-400" /> متن توضیحات و قوانین
                                     </Label>
                                     <Textarea
                                         value={formData.describe}
                                         onChange={(e) => setFormData({ ...formData, describe: e.target.value })}
                                         className="min-h-[160px] border-slate-100 bg-slate-50/50 rounded-[24px] focus:bg-white p-5 resize-none transition-all"
-                                        placeholder="توضیحات مربوط به نحوه استفاده از این جایزه را اینجا بنویسید..."
+                                        placeholder="شرایط استفاده از این کد تخفیف را برای مشتریان شرح دهید..."
                                     />
                                 </div>
                             </CardContent>
                         </Card>
                     </div>
 
-                    {/* Sidebar Area */}
+                    {/* سایدبار: تنظیمات کنترلی */}
                     <div className="space-y-8">
 
-                        {/* Status Switch */}
                         <Card className="border-none shadow-xl rounded-[24px] bg-white group overflow-hidden">
-                            <CardContent className="p-6 flex items-center justify-between relative">
-                                <div className={`absolute right-0 top-0 w-1.5 h-full transition-colors ${formData.active ? 'bg-emerald-500' : 'bg-slate-200'}`} />
-                                <div className="flex items-center gap-3 mr-2">
-                                    <div className={`p-3 rounded-2xl transition-colors ${formData.active ? 'bg-emerald-50 text-emerald-500' : 'bg-slate-50 text-slate-400'}`}>
+                            <CardContent className="p-6 flex items-center justify-between">
+                                <div className="flex items-center gap-3">
+                                    <div className={`p-3 rounded-2xl transition-all ${formData.active ? 'bg-emerald-50 text-emerald-500 shadow-inner' : 'bg-slate-50 text-slate-400'}`}>
                                         <Power className="h-5 w-5" />
                                     </div>
-                                    <div className="flex flex-col text-right">
-                                        <span className="text-sm font-black text-slate-700">وضعیت انتشار</span>
-                                        <span className="text-[10px] text-slate-400 font-bold italic">Visibility Status</span>
+                                    <div className="flex flex-col">
+                                        <span className="text-sm font-black text-slate-700">وضعیت کوپن</span>
+                                        <span className="text-[10px] text-slate-400 font-bold uppercase italic">Active Status</span>
                                     </div>
                                 </div>
                                 <Switch checked={formData.active} onCheckedChange={(val) => setFormData({ ...formData, active: val })} />
                             </CardContent>
                         </Card>
 
-                        {/* Usage Rules */}
                         <Card className="border-none shadow-xl rounded-[24px] bg-white overflow-hidden">
-                            <div className="bg-slate-50 p-4 border-b flex items-center gap-2 text-rose-500">
+                            <div className="bg-slate-50/80 p-4 border-b flex items-center gap-2 text-rose-500">
                                 <Target className="h-4 w-4" />
-                                <span className="text-xs font-black uppercase tracking-widest">محدودیت‌های خرید</span>
+                                <span className="text-xs font-black uppercase tracking-widest">محدودیت‌های سیستمی</span>
                             </div>
-                            <CardContent className="p-6 space-y-5">
+                            <CardContent className="p-6 space-y-6">
                                 <div className="space-y-2">
-                                    <Label className="text-[11px] font-black text-slate-500 mr-1">حداقل مبلغ فاکتور (تومان)</Label>
+                                    <Label className="text-[11px] font-black text-slate-500 mr-1">حداقل مبلغ خرید (تومان)</Label>
                                     <Input
                                         type="number"
                                         value={formData.minBuy}
                                         onChange={(e) => setFormData({ ...formData, minBuy: e.target.value })}
-                                        className="h-11 font-mono rounded-xl bg-slate-50/50 border-slate-100 focus:bg-white text-center"
+                                        className="h-11 font-mono rounded-xl bg-slate-50/50 border-slate-100 text-center"
                                     />
                                 </div>
                                 <div className="space-y-2">
-                                    <Label className="text-[11px] font-black text-slate-500 mr-1">حداکثر تخفیف / سقف خرید</Label>
+                                    <Label className="text-[11px] font-black text-slate-500 mr-1">سقف تخفیف (تومان)</Label>
                                     <Input
                                         type="number"
                                         value={formData.maxBuy}
                                         onChange={(e) => setFormData({ ...formData, maxBuy: e.target.value })}
-                                        className="h-11 font-mono rounded-xl bg-slate-50/50 border-slate-100 focus:bg-white text-center"
+                                        className="h-11 font-mono rounded-xl bg-slate-50/50 border-slate-100 text-center"
                                     />
                                 </div>
                             </CardContent>
                         </Card>
 
-                        {/* Persian Date Range */}
                         <Card className="border-none shadow-xl rounded-[24px] bg-white overflow-visible">
-                            <div className="bg-slate-50 p-4 border-b flex items-center gap-2 text-indigo-500">
+                            <div className="bg-slate-50/80 p-4 border-b flex items-center gap-2 text-indigo-500">
                                 <Calendar className="h-4 w-4" />
-                                <span className="text-xs font-black uppercase tracking-widest">بازه زمانی اعتبار</span>
+                                <span className="text-xs font-black uppercase tracking-widest">زمان‌بندی اعتبار</span>
                             </div>
                             <CardContent className="p-6 space-y-6">
                                 <div className="space-y-2">
-                                    <Label className="text-[11px] font-black text-slate-500 mr-1">تاریخ شروع فعالیت</Label>
+                                    <Label className="text-[11px] font-black text-slate-500 mr-1">تاریخ شروع نمایش</Label>
                                     <DatePicker
                                         calendar={persian}
                                         locale={persian_fa}
                                         style={datePickerStyle}
                                         value={formData.sDate}
-                                        onChange={(date) =>
-                                            setFormData(prev => ({ ...prev, sDate: date }))
-                                        }
+                                        onChange={(date) => setFormData({ ...formData, sDate: date?.toDate?.().toISOString() })}
                                         animations={[opacity()]}
                                     />
                                 </div>
                                 <div className="space-y-2">
-                                    <Label className="text-[11px] font-black text-slate-500 mr-1">تاریخ انقضا (پایان اعتبار)</Label>
+                                    <Label className="text-[11px] font-black text-slate-500 mr-1">تاریخ انقضای خودکار</Label>
                                     <DatePicker
                                         calendar={persian}
                                         locale={persian_fa}
                                         style={datePickerStyle}
                                         value={formData.eDate}
-                                        onChange={(date) =>
-                                            setFormData(prev => ({ ...prev, eDate: date }))
-                                        }
+                                        onChange={(date) => setFormData({ ...formData, eDate: date?.toDate?.().toISOString() })}
                                         animations={[opacity()]}
                                     />
                                 </div>

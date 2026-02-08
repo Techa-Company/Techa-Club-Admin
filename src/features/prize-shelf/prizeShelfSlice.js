@@ -1,11 +1,12 @@
 // src/features/prize-shelf/prizeShelfSlice.js
 
 import { createSlice } from '@reduxjs/toolkit'
-import { createAndUpdatePrize, deletePrize, fetchPrizeById, fetchPrizes } from './prizeShelfActions'
+import { createAndUpdatePrize, deletePrize, fetchPrizeById, fetchPrizes, fetchPrizeTypes } from './prizeShelfActions'
 
 const initialState = {
     prizes: [],
     singlePrize: null,
+    prizeTypes: [],
     loading: false,
     error: null,
 }
@@ -62,6 +63,18 @@ const prizeShelfSlice = createSlice({
                 // state.docs = action.payload
             })
             .addCase(deletePrize.rejected, (state, action) => {
+                state.loading = false
+                state.error = action.payload
+            })
+            .addCase(fetchPrizeTypes.pending, (state) => {
+                state.loading = true
+                state.error = null
+            })
+            .addCase(fetchPrizeTypes.fulfilled, (state, action) => {
+                state.loading = false
+                state.prizeTypes = action.payload
+            })
+            .addCase(fetchPrizeTypes.rejected, (state, action) => {
                 state.loading = false
                 state.error = action.payload
             })

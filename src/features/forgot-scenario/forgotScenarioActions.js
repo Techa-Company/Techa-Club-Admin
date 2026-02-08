@@ -6,7 +6,7 @@ export const fetchScenarios = createAsyncThunk(
     'prize-shelf/fetchScores',
     async (parameters, thunkAPI) => {
         try {
-            const res = await SP_fetch('Form_Business_ForgotScenario', parameters)
+            const res = await SP_fetch('Report_Business_ForgotScenario', parameters)
             console.log(res.Data)
             return res.Data
         } catch (err) {

@@ -2,11 +2,11 @@ import { createAsyncThunk } from "@reduxjs/toolkit"
 import { SP_fetch } from "@/services/api"
 
 
-export const fetchLevels = createAsyncThunk(
-    'prize-shelf/fetchLevels',
+export const fetchCustomers = createAsyncThunk(
+    'prize-shelf/fetchCustomers',
     async (parameters, thunkAPI) => {
         try {
-            const res = await SP_fetch('Report_Business_Level', parameters)
+            const res = await SP_fetch('Report_Customer', parameters)
             console.log(res.Data)
             return res.Data
         } catch (err) {
@@ -16,11 +16,11 @@ export const fetchLevels = createAsyncThunk(
 )
 
 
-export const createAndUpdateLevel = createAsyncThunk(
-    'prize-shelf/createAndUpdateLevel',
+export const createAndUpdateCustomer = createAsyncThunk(
+    'prize-shelf/createAndUpdateCustomer',
     async (parameters, thunkAPI) => {
         try {
-            const res = await SP_fetch('Save_Business_Level', parameters)
+            const res = await SP_fetch('Save_Customer', parameters)
             console.log(res)
         } catch (error) {
             return thunkAPI.rejectWithValue(error.message)

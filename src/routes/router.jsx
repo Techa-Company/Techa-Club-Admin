@@ -107,9 +107,21 @@ const router = createBrowserRouter([
                 }),
             },
             {
-                path: 'discount-code',
+                path: 'coupons',
                 lazy: async () => ({
-                    Component: (await import('@/pages/discount-code/DiscountCode')).default,
+                    Component: (await import('@/pages/coupons/Coupons')).default,
+                }),
+            },
+            {
+                path: 'coupons/new',
+                lazy: async () => ({
+                    Component: (await import('@/pages/coupons/AddCoupon')).default,
+                }),
+            },
+            {
+                path: 'coupons/edit/:id',
+                lazy: async () => ({
+                    Component: (await import('@/pages/coupons/EditCoupon')).default,
                 }),
             },
             {
@@ -131,15 +143,41 @@ const router = createBrowserRouter([
                 }),
             },
             {
+                path: 'customer-level/edit',
+                lazy: async () => ({
+                    Component: (await import('@/pages/customer-management/EditCustomerLevels')).default,
+                }),
+            },
+            {
                 path: 'customers',
                 lazy: async () => ({
                     Component: (await import('@/pages/customer-management/Customers')).default,
                 }),
             },
             {
-                path: 'customer-shopping-list',
+                path: 'customer-purchases',
                 lazy: async () => ({
-                    Component: (await import('@/pages/customer-management/CustomerShoppingList')).default,
+                    Component: (await import('@/pages/customer-management/CustomerPurchases')).default,
+                }),
+            }, {
+                path: 'customer-scores',
+                lazy: async () => ({
+                    Component: (await import('@/pages/customer-management/CustomerScores')).default,
+                }),
+            }, {
+                path: 'customer-prizes',
+                lazy: async () => ({
+                    Component: (await import('@/pages/customer-management/CustomerPrizes')).default,
+                }),
+            }, {
+                path: 'customer-coupons',
+                lazy: async () => ({
+                    Component: (await import('@/pages/customer-management/CustomerCoupons')).default,
+                }),
+            }, {
+                path: 'customer-scenarios',
+                lazy: async () => ({
+                    Component: (await import('@/pages/customer-management/CustomerScenario')).default,
                 }),
             },
             {

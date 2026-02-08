@@ -1,5 +1,5 @@
 // ScoreShelf.jsx
-import { useEffect, useState, useMemo } from 'react';
+import { useEffect, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link, useNavigate } from 'react-router-dom';
 import {
@@ -14,7 +14,10 @@ import {
     Calendar,
     XCircle,
     PlusCircle,
-    ShoppingBag
+    ShoppingBag,
+    Store,
+    Cog,
+    Edit3
 } from 'lucide-react';
 
 import Layout from '../layout/Layout';
@@ -23,17 +26,14 @@ import { Search } from '@/components/Search';
 import { Navbar } from '@/components/Navbar';
 import { Button } from '@/components/button';
 import { DataTable } from '@/components/common/DataTable';
-import { Badge } from '@/components/ui/badge';
 import {
     DropdownMenu,
     DropdownMenuContent,
     DropdownMenuItem,
-    DropdownMenuLabel,
     DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 
-// مسیرهای اکشن‌ها را بر اساس پروژه خود تنظیم کنید
 import { LoadingSpinner, PageLoader } from '@/components/common/Loading';
 import { toast } from 'react-toastify';
 import withReactContent from 'sweetalert2-react-content';
@@ -54,212 +54,230 @@ export default function ScoreShelf() {
     const dispatch = useDispatch();
     const navigate = useNavigate();
 
-    // فرض بر این است که state ریداکس شما اینگونه است
-    const { loading, scores, error } = useSelector(state => state.scoreEshel || { loading: false, scores: [], error: null });
+    const { loading, scores, error } = useSelector(
+        (state) => state.scoreEshel || { loading: false, scores: [], error: null }
+    );
 
     useEffect(() => {
-        dispatch(fetchScores());
+        dispatch(fetchScores({ "_Business": 3 }));
     }, [dispatch]);
 
     const formattedData = useMemo(() => {
-        // دیتای نمونه شما برای نمایش (اگر دیتای واقعی هنوز نیامده)
-        const rawData = scores.length > 0 ? scores : [
-            { id: 3, _Business: 46, ScoreBuy: 10000, ScoreBuyOne: 30, ScoreRegisterFriend: 20, ScoreBuyFriend: null, ScoreFullProfile: 10, ScoreEitaa: 25, savedate: "2024-08-26T21:08:06.043" },
-            { id: 2, _Business: 3, ScoreBuy: 101000, ScoreBuyOne: 40, ScoreRegisterFriend: 20, ScoreBuyFriend: 50000, ScoreFullProfile: 10, ScoreEitaa: 15, savedate: "2024-10-22T06:15:03.03" },
-            { id: 1, _Business: 44, ScoreBuy: 10, ScoreBuyOne: 30, ScoreRegisterFriend: 20, ScoreBuyFriend: 5, ScoreFullProfile: 10, ScoreEitaa: 25, savedate: "2024-05-15T10:21:30.82" }
-        ];
+        if (!scores || scores.length === 0) {
+            return [];
+        }
 
-        return rawData.map(item => ({
+        return scores.map((item) => ({
             ...item,
-            // تبدیل تاریخ به شمسی
             formattedDate: new Date(item.savedate).toLocaleDateString('fa-IR'),
-            // هندل کردن مقادیر null
             ScoreBuyFriend: item.ScoreBuyFriend ?? 0,
         }));
     }, [scores]);
 
-    if (loading && (!scores || scores.length === 0)) {
+    // ── لودینگ ──
+    if (loading) {
         return <PageLoader />;
     }
 
-    const handleDelete = async (id) => {
-        const confirm = await MySwal.fire({
-            title: 'حذف قانون امتیاز',
-            text: "آیا از حذف این ردیف مطمئن هستید؟",
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonText: 'بله، حذف کن',
-            cancelButtonText: 'انصراف',
-            confirmButtonColor: '#d33',
-        });
+    // ── خطا ──
+    if (error) {
+        return (
+            <Layout>
+                <Layout.Header>
+                    <Navbar links={topNav} />
+                    <div className="mr-auto flex items-center space-x-4 gap-5">
+                        <Search />
+                        <UserNavbar />
+                    </div>
+                </Layout.Header>
 
-        // if (confirm.isConfirmed) {
-        //     try {
-        //         await dispatch(deleteScore({ Id: id })).unwrap();
-        //         toast.success('با موفقیت حذف شد');
-        //         dispatch(fetchScores());
-        //     } catch (err) {
-        //         toast.error('خطا در حذف');
-        //     }
-        // }
-    };
-
-    // --- تعریف ستون‌ها ---
+                <Layout.Body>
+                    <div className="max-w-2xl mx-auto mt-12 p-8 bg-destructive/5 border border-destructive/30 rounded-xl text-center">
+                        <XCircle className="h-12 w-12 text-destructive mx-auto mb-4" />
+                        <h2 className="text-2xl font-bold text-destructive mb-3">
+                            مشکلی پیش آمد
+                        </h2>
+                        <p className="text-muted-foreground mb-6">{error}</p>
+                        <Button
+                            onClick={() => {
+                                dispatch(fetchScores({ "_Business": 3 }));
+                                toast.info('در حال بارگذاری مجدد...');
+                            }}
+                        >
+                            تلاش مجدد
+                        </Button>
+                    </div>
+                </Layout.Body>
+            </Layout>
+        );
+    }
     const columns = [
         {
-            accessorKey: "id",
-            header: "ردیف",
-            cell: ({ row }) => <span className="font-mono text-muted-foreground">#{row.getValue("id")}</span>,
-            size: 60,
+            id: 'rowNumber',
+            header: 'ردیف',
+            size: 70,
+            cell: ({ row }) => (
+                <span className="font-mono text-muted-foreground">
+                    {row.index + 1}
+                </span>
+            ),
         },
-        // 1. امتیاز خرید
         {
-            accessorKey: "ScoreBuy",
+            accessorKey: 'BusinessName',
             header: ({ column }) => (
-                <div className="flex items-center gap-2 cursor-pointer" onClick={() => column.toggleSorting()}>
+                <div
+                    className="flex items-center gap-2 cursor-pointer"
+                >
+                    <Store className="h-4 w-4 text-blue-500" />
+                    <span>کسب و کار</span>
+                </div>
+            ),
+            cell: ({ row }) => (
+                <div className="font-semibold">
+                    {row.getValue('BusinessName')}
+                </div>
+            ),
+            size: 180,
+            minSize: 140,
+        },
+        {
+            accessorKey: 'ScoreBuy',
+            header: ({ column }) => (
+                <div
+                    className="flex items-center gap-2 cursor-pointer justify-center"
+                    onClick={() => column.toggleSorting()}
+                >
                     <ShoppingBag className="h-4 w-4 text-primary" />
                     <span>خرید عادی</span>
                     <ArrowUpDown className="h-3 w-3" />
                 </div>
             ),
             cell: ({ row }) => (
-                <div className="font-semibold text-foreground">
-                    {Number(row.getValue("ScoreBuy")).toLocaleString()}
+                <div className="font-semibold text-center">
+                    {Number(row.getValue('ScoreBuy')).toLocaleString()}
                 </div>
             ),
-            size: 110,
+            size: 120,
         },
-        // 2. امتیاز خرید اول
         {
-            accessorKey: "ScoreBuyOne",
-            header: ({ column }) => (
-                <div className="flex items-center gap-2">
+            accessorKey: 'ScoreBuyOne',
+            header: () => (
+                <div className="flex items-center gap-2 justify-center">
                     <Trophy className="h-4 w-4 text-amber-500" />
                     <span>خرید اول</span>
                 </div>
             ),
             cell: ({ row }) => (
-                <span className="font-medium text-amber-600 bg-amber-50 px-2 py-1 rounded-md">
-                    {Number(row.getValue("ScoreBuyOne")).toLocaleString()}
+                <span className="font-medium w-fit block mx-auto text-amber-700 bg-amber-50 px-2.5 py-1 rounded">
+                    {Number(row.getValue('ScoreBuyOne')).toLocaleString()}
                 </span>
             ),
-            size: 110,
+            size: 120,
         },
-        // 3. امتیاز دعوت دوست
         {
-            accessorKey: "ScoreRegisterFriend",
-            header: ({ column }) => (
-                <div className="flex items-center gap-2">
+            accessorKey: 'ScoreRegisterFriend',
+            header: () => (
+                <div className="flex items-center gap-2 justify-center">
                     <UserPlus className="h-4 w-4 text-blue-500" />
                     <span>دعوت دوست</span>
                 </div>
             ),
             cell: ({ row }) => (
-                <span className="font-medium text-blue-600">
-                    {Number(row.getValue("ScoreRegisterFriend")).toLocaleString()}
+                <span className="font-medium w-fit block mx-auto text-blue-700">
+                    {Number(row.getValue('ScoreRegisterFriend')).toLocaleString()}
                 </span>
             ),
-            size: 120,
+            size: 130,
         },
-        // 4. امتیاز خرید دوست
         {
-            accessorKey: "ScoreBuyFriend",
-            header: ({ column }) => (
-                <div className="flex items-center gap-2">
+            accessorKey: 'ScoreBuyFriend',
+            header: () => (
+                <div className="flex items-center gap-2 justify-center">
                     <Users className="h-4 w-4 text-indigo-500" />
                     <span>خرید دوست</span>
                 </div>
             ),
             cell: ({ row }) => {
-                const val = row.getValue("ScoreBuyFriend");
+                const val = row.getValue('ScoreBuyFriend');
                 return val ? (
-                    <span className="font-medium text-indigo-600">
+                    <span className="font-medium w-fit block mx-auto text-indigo-700">
                         {Number(val).toLocaleString()}
                     </span>
                 ) : (
-                    <span className="text-muted-foreground">-</span>
+                    <span className="text-muted-foreground">—</span>
                 );
             },
-            size: 110,
+            size: 120,
         },
-        // 5. امتیاز پروفایل کامل
         {
-            accessorKey: "ScoreFullProfile",
-            header: ({ column }) => (
-                <div className="flex items-center gap-2">
+            accessorKey: 'ScoreFullProfile',
+            header: () => (
+                <div className="flex items-center gap-2 justify-center">
                     <UserCheck className="h-4 w-4 text-emerald-500" />
                     <span>تکمیل پروفایل</span>
                 </div>
             ),
             cell: ({ row }) => (
-                <span className="font-medium text-emerald-600">
-                    {Number(row.getValue("ScoreFullProfile")).toLocaleString()}
+                <span className="font-medium w-fit block mx-auto text-emerald-700">
+                    {Number(row.getValue('ScoreFullProfile')).toLocaleString()}
                 </span>
             ),
-            size: 120,
+            size: 140,
         },
-        // 6. امتیاز ایتا
         {
-            accessorKey: "ScoreEitaa",
-            header: ({ column }) => (
-                <div className="flex items-center gap-2">
+            accessorKey: 'ScoreEitaa',
+            header: () => (
+                <div className="flex items-center gap-2 justify-center">
                     <Send className="h-4 w-4 text-sky-500" />
                     <span>عضویت در ایتا</span>
                 </div>
             ),
             cell: ({ row }) => (
-                <span className="font-medium text-sky-600">
-                    {Number(row.getValue("ScoreEitaa")).toLocaleString()}
+                <span className="font-medium w-fit block mx-auto text-sky-700">
+                    {Number(row.getValue('ScoreEitaa')).toLocaleString()}
                 </span>
             ),
-            size: 110,
+            size: 120,
         },
-        // تاریخ
         {
-            accessorKey: "formattedDate",
-            header: "تاریخ ثبت",
-            cell: ({ row }) => (
-                <div className="flex items-center gap-2 text-muted-foreground text-sm">
-                    <Calendar className="h-3 w-3" />
-                    <span>{row.getValue("formattedDate")}</span>
+            accessorKey: 'formattedDate',
+            header: () => (
+                <div className="flex items-center gap-2 justify-center">
+                    <Calendar className="h-4 w-4 text-pink-500" />
+                    <span>تاریخ ثبت</span>
                 </div>
             ),
-            size: 130,
+            cell: ({ row }) => (
+                <div className="flex items-center gap-2 text-muted-foreground text-sm justify-center">
+                    <span>{row.getValue('formattedDate')}</span>
+                </div>
+            ),
+            size: 140,
         },
-        // عملیات
         {
             id: "actions",
-            header: "",
+            header: "عملیات",
             cell: ({ row }) => (
-                <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" className="h-8 w-8 p-0">
-                            <MoreHorizontalIcon className="h-4 w-4" />
-                        </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
-                        <DropdownMenuItem asChild>
-                            <Link to={`edit/${row.original.id}`}>ویرایش</Link>
-                        </DropdownMenuItem>
-                        <DropdownMenuSeparator />
-                        <DropdownMenuItem
-                            className="text-destructive focus:text-destructive cursor-pointer"
-                            onClick={() => handleDelete(row.original.id)}
-                        >
-                            حذف
-                        </DropdownMenuItem>
-                    </DropdownMenuContent>
-                </DropdownMenu>
+                <div className="flex items-center gap-2">
+                    <Button size="icon" variant="ghost" className="h-8 w-8 rounded-full hover:bg-primary/10 hover:text-primary" asChild>
+                        <Link to={`edit/${row.original.id}`}>
+                            <Edit3 className="h-4 w-4" />
+                        </Link>
+                    </Button>
+                    {/* <Button size="icon" variant="ghost" className={`h-8 w-8 rounded-full ${row.original.active ? "hover:text-rose-600" : "hover:text-emerald-600"}`}>
+                        <Power className="h-4 w-4" />
+                    </Button> */}
+                </div>
             ),
-            size: 50,
-        },
-    ];
-
+            size: 100,
+        }
+    ]
+    // ── رندر اصلی صفحه ──
     return (
         <Layout>
             <Layout.Header>
                 <Navbar links={topNav} />
-                <div className='mr-auto flex items-center space-x-4 gap-5'>
+                <div className="mr-auto flex items-center space-x-4 gap-5">
                     <Search />
                     <UserNavbar />
                 </div>
@@ -267,42 +285,62 @@ export default function ScoreShelf() {
 
             <Layout.Body>
                 {/* هدر صفحه */}
-                <div className='mb-6 p-4 bg-card rounded-xl border shadow-sm flex items-center justify-between'>
-                    <div className="flex items-center gap-3">
-                        <div className="p-2 bg-primary/10 rounded-lg">
-                            <Coins className="h-6 w-6 text-primary" />
+                <div className="mb-8 p-6 bg-card rounded-2xl border shadow-sm flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
+                    <div className="flex items-center gap-4">
+                        <div className="p-3 bg-primary/10 rounded-xl">
+                            <Coins className="h-7 w-7 text-primary" />
                         </div>
                         <div>
-                            <h2 className='text-lg font-bold'>تنظیمات امتیازدهی</h2>
-                            <p className="text-sm text-muted-foreground">مشاهده و مدیریت امتیازات خرید و فعالیت‌ها</p>
+                            <h1 className="text-2xl font-bold tracking-tight">
+                                تنظیمات امتیازدهی
+                            </h1>
+                            <p className="text-muted-foreground mt-1">
+                                مدیریت قوانین امتیاز خرید، دعوت دوستان و فعالیت‌ها
+                            </p>
                         </div>
                     </div>
-                    <Button onClick={() => navigate("new")} className="gap-2">
-                        <PlusCircle className="h-4 w-4" />
-                        قانون جدید
-                    </Button>
+
+                    {/* <Button
+                        onClick={() => navigate('new')}
+                        size="lg"
+                        className="gap-2 whitespace-nowrap"
+                    >
+                        <PlusCircle className="h-5 w-5" />
+                        ایجاد قانون جدید
+                    </Button> */}
                 </div>
 
-                {/* نمایش خطا */}
-                {error && (
-                    <div className="mb-6 p-4 bg-destructive/10 text-destructive rounded-lg border border-destructive/20 flex gap-2 items-center">
-                        <XCircle className="h-5 w-5" />
-                        {error}
-                    </div>
-                )}
+                {/* محتوای اصلی */}
+                <div className="bg-background border rounded-2xl shadow-sm overflow-hidden">
+                    {formattedData.length === 0 ? (
+                        <div className="py-20 px-8 text-center">
+                            <Coins className="h-16 w-16 text-muted-foreground/40 mx-auto mb-6" />
+                            <h3 className="text-xl font-semibold mb-3">
+                                هنوز هیچ قانون امتیازی ثبت نشده است
+                            </h3>
+                            <p className="text-muted-foreground mb-8 max-w-md mx-auto">
+                                با ایجاد اولین قانون امتیازدهی، می‌توانید سیستم پاداش‌دهی به مشتریان خود را فعال کنید.
+                            </p>
+                            {/* <Button
+                                onClick={() => navigate('new')}
+                                size="lg"
+                                className="gap-2"
+                            >
+                                <PlusCircle className="h-5 w-5" />
+                                ایجاد قانون جدید
+                            </Button> */}
+                        </div>
+                    ) : (
+                        <div className="p-6">
+                            <DataTable
+                                data={formattedData}
+                                columns={columns}
+                                filters={[
 
-                {/* جدول داده‌ها */}
-                <div className="bg-background border rounded-xl shadow-sm overflow-hidden p-5">
-                    <DataTable
-                        data={formattedData}
-                        columns={columns}
-                        filters={[
-                            {
-                                value: "id", // یا هر فیلد دیگری برای جستجو
-                                placeholder: "جستجو..."
-                            }
-                        ]}
-                    />
+                                ]}
+                            />
+                        </div>
+                    )}
                 </div>
             </Layout.Body>
         </Layout>

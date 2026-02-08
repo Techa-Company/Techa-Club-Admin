@@ -6,7 +6,7 @@ export const fetchPrizes = createAsyncThunk(
     'prize-shelf/fetchPrizes',
     async (parameters, thunkAPI) => {
         try {
-            const res = await SP_fetch('Report_PrizeShelf', parameters)
+            const res = await SP_fetch('Form_PrizeShelf', parameters)
             console.log(res.Data)
             return res.Data
         } catch (err) {
@@ -54,3 +54,15 @@ export const deletePrize = createAsyncThunk(
     }
 )
 
+export const fetchPrizeTypes = createAsyncThunk(
+    'prize-shelf/fetchPrizeTypes',
+    async (parameters, thunkAPI) => {
+        try {
+            const res = await SP_fetch('Report_typePrize', parameters)
+            console.log(res.Data)
+            return res.Data
+        } catch (err) {
+            return thunkAPI.rejectWithValue(err.message)
+        }
+    }
+)

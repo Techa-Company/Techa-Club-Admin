@@ -80,52 +80,55 @@ export function DataTable({ data, columns, filters }) {
 
     return (
         <div className="w-full">
-            <div className="flex flex-col md:flex-row py-4 gap-5">
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
-                    {
-                        filters.map((item, index) => {
-                            return (
-                                <Input
-                                    key={index}
-                                    placeholder={`فیلتر بر اساس ${item.placeholder}`}
-                                    value={(table.getColumn(item.value)?.getFilterValue()) ?? ""}
-                                    onChange={(event) =>
-                                        table.getColumn(item.value)?.setFilterValue(event.target.value)
-                                    }
-                                    className="w-full"
-                                />
-                            )
-                        })
-                    }
+            {filters.length != 0 && (
 
-                </div>
-                <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                        <Button variant="outline" className="mr-auto">
-                            ستون ها <ChevronDown className="mr-2 h-4 w-4" />
-                        </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
-                        {table
-                            .getAllColumns()
-                            .filter((column) => column.getCanHide())
-                            .map((column) => {
+                <div className="flex flex-col md:flex-row py-4 gap-5">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
+                        {
+                            filters.map((item, index) => {
                                 return (
-                                    <DropdownMenuCheckboxItem
-                                        key={column.id}
-                                        className="capitalize"
-                                        checked={column.getIsVisible()}
-                                        onCheckedChange={(value) =>
-                                            column.toggleVisibility(!!value)
+                                    <Input
+                                        key={index}
+                                        placeholder={`فیلتر بر اساس ${item.placeholder}`}
+                                        value={(table.getColumn(item.value)?.getFilterValue()) ?? ""}
+                                        onChange={(event) =>
+                                            table.getColumn(item.value)?.setFilterValue(event.target.value)
                                         }
-                                    >
-                                        {column.id}
-                                    </DropdownMenuCheckboxItem>
+                                        className="w-full"
+                                    />
                                 )
-                            })}
-                    </DropdownMenuContent>
-                </DropdownMenu>
-            </div>
+                            })
+                        }
+
+                    </div>
+                    <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                            <Button variant="outline" className="mr-auto">
+                                ستون ها <ChevronDown className="mr-2 h-4 w-4" />
+                            </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end">
+                            {table
+                                .getAllColumns()
+                                .filter((column) => column.getCanHide())
+                                .map((column) => {
+                                    return (
+                                        <DropdownMenuCheckboxItem
+                                            key={column.id}
+                                            className="capitalize"
+                                            checked={column.getIsVisible()}
+                                            onCheckedChange={(value) =>
+                                                column.toggleVisibility(!!value)
+                                            }
+                                        >
+                                            {column.id}
+                                        </DropdownMenuCheckboxItem>
+                                    )
+                                })}
+                        </DropdownMenuContent>
+                    </DropdownMenu>
+                </div>
+            )}
             <div className="rounded-md border">
                 <Table>
                     <TableHeader>
@@ -202,7 +205,7 @@ export function DataTable({ data, columns, filters }) {
                         {table.getState().pagination.pageIndex + 1} از{' '}
                         {table.getPageCount()} صفحه
                     </div>
-                    <div className='flex items-center space-x-2'>
+                    <div className='flex items-center gap-2'>
                         <Button
                             variant='outline'
                             className='hidden h-8 w-8 p-0 lg:flex'
