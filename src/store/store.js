@@ -1,4 +1,5 @@
 import { configureStore } from "@reduxjs/toolkit"
+import authReducer from "../features/auth/authSlice"
 import dashboardReducer from "../features/dashboard/dashboardSlice"
 import prizeShelfReducer from "../features/prize-shelf/prizeShelfSlice"
 import scoreEshelReducer from "../features/score-eshel/scoreEshelSlice"
@@ -13,6 +14,7 @@ import customerCouponsReducer from "../features/customer-coupon/customerCouponSl
 
 const store = configureStore({
     reducer: {
+        auth: authReducer,
         dashboard: dashboardReducer,
         prizeShelf: prizeShelfReducer,
         scoreEshel: scoreEshelReducer,

@@ -6,6 +6,14 @@ import { RouterProvider } from 'react-router-dom'
 import router from './routes/router.jsx'
 import { Provider } from 'react-redux'
 import store from './store/store.js'
+import { setCredentials } from './features/auth/authSlice.js'
+import Cookies from "js-cookie";
+
+const token = Cookies.get("token");
+
+if (token) {
+  store.dispatch(setCredentials({ token, user: null }));
+}
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
